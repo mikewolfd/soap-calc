@@ -18,14 +18,36 @@ metadata:
 ## Before You Start
 If the user's request involves **formulation, chemistry, fatty acid selection, additive choices, or troubleshooting soap behavior**, read `references/soap-formulation-expert-reference.md` first. It contains condensed expert knowledge on fatty acid profiles, additive interactions, and formulation archetypes.
 
-Skip the reference file for simple requests like "make me a soap label" or "write product descriptions for my soap line."
+If the request specifically involves **superfat oil selection, HP post-cook additions, DOS/rancidity prevention, or oxidation stability**, also read `references/superfat-guide.md`. It covers superfat tradeoffs (stability vs. sensory vs. lather), base-superfat interactions, and stabilization strategies in depth.
+
+Skip the reference files for simple requests like "make me a soap label" or "write product descriptions for my soap line."
 
 ## The `soap-calc` Package
 
 This project contains a full-featured soap calculator. **Use the package tools instead of doing manual calculations.** The package handles SAP values, lye calculations, property estimation, and validation — all from its built-in oil database.
 
-### CLI and API
-Project paths, CLI commands, and architecture details are in `CLAUDE.md`. For Python API usage and writing recipe files, consult `references/api-guide.md`.
+### Key Project Paths
+- **Oil database**: `data/oils.json` — built-in library of common oils with SAP values and fatty acid profiles
+- **Additive database**: `data/additives.json` — common soap additives with usage rates and notes
+- **Example recipes**: `examples/` — reference recipe files
+- **JSON Schemas**: `schemas/` — validation schemas for recipes (`recipe.schema.json`), oils (`oils.schema.json`), and additives (`additives.schema.json`)
+- **User extensions**: Oils can be extended via `~/.soap_calc/oils.json`
+
+### CLI Commands
+The `soap-calc` command is available after installing the package (`pip install -e .`).
+
+| Command | Usage | Purpose |
+|---|---|---|
+| `calculate` | `soap-calc calculate recipe.yaml` | Calculate lye, water, and measurements; display results |
+| `export` | `soap-calc export recipe.yaml -o report.md` | Generate a detailed Markdown recipe sheet |
+| `validate` | `soap-calc validate recipe.yaml` | Check recipe for warnings and issues |
+| `list-oils` | `soap-calc list-oils "coconut"` | Search/list oils in the built-in database |
+| `scale` | `soap-calc scale recipe.yaml 1000 -o scaled.yaml` | Resize recipe to a target oil weight |
+
+- Use `--oil-weight {grams}` with `calculate` or `export` to override the recipe's default oil weight.
+- Use `-o {path}` with `export` and `scale` to write output to a file.
+
+For Python API usage and writing recipe files, consult `references/api-guide.md`. It includes a schema-driven workflow for generating valid recipe JSON/YAML from `schemas/recipe.schema.json`.
 
 ### Workflow: Generating a Complete Recipe
 
@@ -40,10 +62,22 @@ When a user asks you to formulate a recipe, follow this workflow:
 
 **Never manually calculate lye amounts when the package is available.** The oil database has verified SAP values. Use `calculate()` or the CLI to get exact, safe lye figures.
 
-## Lye Safety
-- **Use the `soap-calc` package for all lye calculations.** Never calculate manually — incorrect lye = caustic soap.
-- If an oil is not in the database, say so and recommend verifying with an external calculator (SoapCalc, Soapee).
-- Never present an unverified lye amount as safe.
+## Recipe Output Format
+When generating a soap recipe, always include:
+
+1. **Oil blend** — list each oil with percentage of total oil weight
+2. **Fatty acid profile summary** — approximate % lauric, myristic, palmitic, stearic, oleic, linoleic, ricinoleic
+3. **Lye type and amount** — specify NaOH or KOH (or both), calculated at the stated superfat %
+4. **Water amount** — as ratio to lye (e.g., 2:1 water:lye) or % of oil weight
+5. **Superfat %** — and rationale for the chosen level
+6. **Additives** — with usage rates (% of oil weight or tsp per lb of oils)
+7. **Process notes** — CP or HP, expected trace speed, temperature guidance, cure time
+8. **Expected soap properties** — hardness, lather type, cleansing level, conditioning, longevity
+
+## Lye Calculation Rules
+- **Use the `soap-calc` package for all lye calculations.** The built-in oil database has verified SAP values.
+- If an oil is not in the database, say so and recommend the user add it to `~/.soap_calc/oils.json` or verify with an external calculator (SoapCalc, Soapee).
+- Never present an unverified lye amount as safe. Incorrect lye = caustic or lye-heavy soap. This is a safety issue.
 - Always state the superfat % used in the calculation.
 
 ## Safety Callouts
@@ -64,7 +98,9 @@ Always include safety notes when generating recipes or process instructions:
 
 **"Help me formulate a soap for [goal]"** → Read reference file. Start from the closest archetype recipe, then adjust fatty acid targets to match the goal. Write a recipe file, validate it, and calculate it with the package. Explain tradeoffs.
 
-**"Why is my soap [problem]?"** → Read reference file. Map the symptom to likely causes (e.g., soft bar → too much oleic/not enough palmitic/stearic, or insufficient cure time; DOS → high polyunsaturates + no chelator/antioxidant). If the user provides a recipe file, run `soap-calc validate` and `soap-calc calculate` to get concrete data.
+**"Why is my soap [problem]?"** → Read reference file. Map the symptom to likely causes (e.g., soft bar → too much oleic/not enough palmitic/stearic, or insufficient cure time; DOS → high polyunsaturates + no chelator/antioxidant). For DOS/rancidity specifically, also read `references/superfat-guide.md` for oxidation system analysis. If the user provides a recipe file, run `soap-calc validate` and `soap-calc calculate` to get concrete data.
+
+**"What should I use for superfat?" / "Which oil for post-cook HP?"** → Read `references/superfat-guide.md`. Match recommendation to the user's base oil profile (high-lauric, high-stearic, high-oleic, or high-PUFA) using the base-superfat strategy table. Recommend from Bucket 1 (high-impact, stable) by default. Flag stability concerns for PUFA-heavy picks.
 
 **"What oil can I substitute for [oil]?"** → Use `soap-calc list-oils` to look up fatty acid profiles. Match by fatty acid profile, not by oil name. Two oils with similar fatty acid breakdowns are interchangeable.
 
@@ -84,8 +120,9 @@ Always include safety notes when generating recipes or process instructions:
 ### Example 2: "Why is my soap getting orange spots?"
 
 1. Read `references/soap-formulation-expert-reference.md` — identify DOS (Dreaded Orange Spots) as rancidity from high polyunsaturates.
-2. If the user provides a recipe file, run `soap-calc calculate` and check linoleic + linolenic totals.
-3. Recommend: reduce polyunsaturates below 15%, add a chelator (sodium citrate at 0.5% of oils), add antioxidant (ROE or vitamin E at 0.5% of oils). Reference additive details in `data/additives.json`.
+2. Read `references/superfat-guide.md` — analyze both layers of oxidation risk (superfat pool + soap matrix) and base-superfat combo stability.
+3. If the user provides a recipe file, run `soap-calc calculate` and check linoleic + linolenic totals.
+4. Recommend: reduce polyunsaturates below 15%, switch to a stable superfat (Bucket 1 or 2), add a chelator (sodium citrate at 0.5% of oils), add antioxidant (ROE or vitamin E at 0.5% of oils). Reference additive details in `data/additives.json`.
 
 ### Example 3: "What can I use instead of palm oil?"
 

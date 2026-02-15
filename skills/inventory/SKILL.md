@@ -60,7 +60,7 @@ For every item the user mentions:
 ### 3. Save `inventory.md`
 
 **Always start from the template:**
-1. Read the template file at `skills/inventory/assets/inventory.template.md`
+1. Read the template file at `assets/inventory.template.md` (relative to this skill folder)
 2. Copy the entire contents (including frontmatter)
 3. Replace the placeholder sections with actual data:
    - Update `last_updated` in both frontmatter and body to current date (YYYY-MM-DD)
