@@ -34,13 +34,14 @@ def validate_file(data_file_path, schema_file_path):
     print("-" * 30)
 
 if __name__ == "__main__":
-    base_dir = Path(".")
+    # Assume script is in scripts/ directory, so project root is parent
+    base_dir = Path(__file__).parent.parent
     
     # 1. Validate Oils Database
-    validate_file("data/oils.json", "schemas/oils.schema.json")
+    validate_file(base_dir / "data/oils.json", base_dir / "schemas/oils.schema.json")
     
     # 2. Validate Additives Database
-    validate_file("data/additives.json", "schemas/additives.schema.json")
+    validate_file(base_dir / "data/additives.json", base_dir / "schemas/additives.schema.json")
     
     # 3. Validate Example Recipe
-    validate_file("examples/beginner_3oil.json", "schemas/recipe.schema.json")
+    validate_file(base_dir / "examples/beginner_3oil.json", base_dir / "schemas/recipe.schema.json")

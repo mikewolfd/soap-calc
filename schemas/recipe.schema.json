@@ -1,256 +1,380 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/soap-calc/soap-calc/schemas/recipe.schema.json",
-    "title": "Soap Recipe",
-    "description": "Input format for soap recipes (JSON/YAML).",
-    "type": "object",
-    "required": [
-        "name",
-        "oils"
-    ],
-    "properties": {
+  "$defs": {
+    "Additive": {
+      "properties": {
         "name": {
-            "type": "string",
-            "description": "Recipe name."
+          "title": "Name",
+          "type": "string"
         },
-        "description": {
-            "type": "string",
-            "description": "User-facing description of the recipe purpose and characteristics."
-        },
-        "lye_type": {
-            "type": "string",
-            "enum": [
-                "NaOH",
-                "KOH",
-                "Hybrid (Dual Lye)"
-            ],
-            "default": "NaOH",
-            "description": "Primary lye type."
-        },
-        "naoh_ratio": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100,
-            "default": 100,
-            "description": "If Hybrid, percentage of NaOH (0-100). Rest is KOH."
-        },
-        "superfat_pct": {
-            "type": "number",
-            "minimum": 0,
-            "default": 5.0,
-            "description": "Lye discount percentage (standard) or superfat if separate superfat_oils used."
-        },
-        "water_mode": {
-            "type": "string",
-            "enum": [
-                "Water:Lye Ratio",
-                "Lye Concentration",
-                "Water as % of Oils"
-            ],
-            "default": "Water:Lye Ratio",
-            "description": "Method for calculating water amount."
-        },
-        "water_value": {
-            "type": "number",
-            "minimum": 0,
-            "default": 2.0,
-            "description": "Value corresponding to the water_mode (e.g., 2.0 for 2:1 ratio)."
-        },
-        "liquid_discount_pct": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100,
-            "default": 0.0,
-            "description": "Additional liquid discount percentage (applied after calculation)."
-        },
-        "total_oil_weight": {
-            "type": "number",
-            "minimum": 0,
-            "description": "Total oil weight in grams (base + superfat). Mutually exclusive with base_oil_weight."
-        },
-        "base_oil_weight": {
-            "type": "number",
-            "minimum": 0,
-            "description": "Base oil weight in grams (excludes superfat). Total oil weight is calculated from this. Mutually exclusive with total_oil_weight."
-        },
-        "ignore_warnings": {
-            "type": "array",
-            "items": {
-                "type": "string"
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
             },
-            "description": "List of validation warning codes to suppress."
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Percentage"
+        },
+        "percent_base": {
+          "$ref": "#/$defs/PercentBase",
+          "default": "Oil Weight"
+        },
+        "stage": {
+          "$ref": "#/$defs/Stage",
+          "default": "Light Trace"
+        },
+        "lye_adjustment": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lye Adjustment"
         },
         "notes": {
-            "type": "string",
-            "description": "Recipe notes."
-        },
-        "mold": {
-            "type": "object",
-            "description": "Mold dimensions for auto-sizing the batch.",
-            "required": [
-                "length",
-                "width",
-                "height"
-            ],
-            "properties": {
-                "length": {
-                    "type": "number"
-                },
-                "width": {
-                    "type": "number"
-                },
-                "height": {
-                    "type": "number"
-                },
-                "fill_factor": {
-                    "type": "number",
-                    "default": 0.95
-                }
-            },
-            "additionalProperties": false
-        },
-        "oils": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "object",
-                "required": [
-                    "oil",
-                    "percentage"
-                ],
-                "properties": {
-                    "oil": {
-                        "type": "string",
-                        "description": "Name of the oil (must match database)."
-                    },
-                    "percentage": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 100
-                    }
-                }
-            }
-        },
-        "liquids": {
-            "type": "array",
-            "description": "Liquid ingredients (e.g. water, milk, aloe). Defaults to 100% Water.",
-            "items": {
-                "type": "object",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "percentage": {
-                        "type": "number",
-                        "default": 100.0,
-                        "description": "% of total liquid weight"
-                    },
-                    "handling_notes": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "additives": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "amount": {
-                        "type": "number",
-                        "description": "Absolute amount in grams (overrides percentage)."
-                    },
-                    "percentage": {
-                        "type": "number",
-                        "description": "Usage rate %."
-                    },
-                    "percent_base": {
-                        "type": "string",
-                        "enum": [
-                            "Oil Weight",
-                            "Liquid Weight",
-                            "Total Batch Weight"
-                        ],
-                        "default": "Oil Weight"
-                    },
-                    "stage": {
-                        "type": "string",
-                        "default": "Light Trace"
-                    },
-                    "notes": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "fragrances": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "Fragrance Oil",
-                            "Essential Oil"
-                        ],
-                        "default": "Fragrance Oil"
-                    },
-                    "amount": {
-                        "type": "number"
-                    },
-                    "percentage": {
-                        "type": "number"
-                    },
-                    "max_safe_pct": {
-                        "type": "number",
-                        "description": "IFRA safety limit %."
-                    },
-                    "stage": {
-                        "type": "string",
-                        "default": "Light Trace"
-                    },
-                    "notes": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "superfat_oils": {
-            "type": "array",
-            "description": "Oils added After Cook / Post-Trace (Hot Process or specialized).",
-            "items": {
-                "type": "object",
-                "required": [
-                    "oil",
-                    "percentage"
-                ],
-                "properties": {
-                    "oil": {
-                        "type": "string"
-                    },
-                    "percentage": {
-                        "type": "number",
-                        "description": "% of the Superfat Phase (components of the post-cook oil blend)."
-                    }
-                }
-            }
+          "default": "",
+          "title": "Notes",
+          "type": "string"
         }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Additive",
+      "type": "object"
     },
-    "additionalProperties": false
+    "Fragrance": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "fragrance_type": {
+          "$ref": "#/$defs/FragranceType",
+          "default": "Fragrance Oil"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Percentage"
+        },
+        "max_safe_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Safe Pct"
+        },
+        "stage": {
+          "$ref": "#/$defs/Stage",
+          "default": "Light Trace"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Fragrance",
+      "type": "object"
+    },
+    "FragranceType": {
+      "enum": [
+        "Essential Oil",
+        "Fragrance Oil"
+      ],
+      "title": "FragranceType",
+      "type": "string"
+    },
+    "Liquid": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "percentage": {
+          "default": 100.0,
+          "title": "Percentage",
+          "type": "number"
+        },
+        "handling_notes": {
+          "default": "",
+          "title": "Handling Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Liquid",
+      "type": "object"
+    },
+    "LyeType": {
+      "enum": [
+        "NaOH",
+        "KOH",
+        "Hybrid (Dual Lye)"
+      ],
+      "title": "LyeType",
+      "type": "string"
+    },
+    "MoldSpec": {
+      "properties": {
+        "length": {
+          "title": "Length",
+          "type": "number"
+        },
+        "width": {
+          "title": "Width",
+          "type": "number"
+        },
+        "height": {
+          "title": "Height",
+          "type": "number"
+        },
+        "fill_factor": {
+          "default": 0.95,
+          "title": "Fill Factor",
+          "type": "number"
+        }
+      },
+      "required": [
+        "length",
+        "width",
+        "height"
+      ],
+      "title": "MoldSpec",
+      "type": "object"
+    },
+    "OilEntry": {
+      "properties": {
+        "oil": {
+          "type": "string"
+        },
+        "percentage": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Percentage",
+          "type": "number"
+        }
+      },
+      "required": [
+        "oil",
+        "percentage"
+      ],
+      "title": "OilEntry",
+      "type": "object"
+    },
+    "PercentBase": {
+      "enum": [
+        "Oil Weight",
+        "Liquid Weight",
+        "Total Batch Weight"
+      ],
+      "title": "PercentBase",
+      "type": "string"
+    },
+    "Stage": {
+      "enum": [
+        "Lye Liquid",
+        "Oil Phase",
+        "Light Trace",
+        "Medium Trace",
+        "Heavy Trace",
+        "Post Cook / After Gel",
+        "In Mold"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "WaterCalculationMode": {
+      "enum": [
+        "Water:Lye Ratio",
+        "Lye Concentration",
+        "Water as % of Oils"
+      ],
+      "title": "WaterCalculationMode",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "name": {
+      "default": "Untitled Recipe",
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "lye_type": {
+      "$ref": "#/$defs/LyeType",
+      "default": "NaOH"
+    },
+    "naoh_ratio": {
+      "default": 100.0,
+      "title": "Naoh Ratio",
+      "type": "number"
+    },
+    "naoh_purity": {
+      "default": 100.0,
+      "title": "Naoh Purity",
+      "type": "number"
+    },
+    "koh_purity": {
+      "default": 90.0,
+      "title": "Koh Purity",
+      "type": "number"
+    },
+    "superfat_pct": {
+      "default": 5.0,
+      "title": "Superfat Pct",
+      "type": "number"
+    },
+    "water_mode": {
+      "$ref": "#/$defs/WaterCalculationMode",
+      "default": "Water:Lye Ratio"
+    },
+    "water_value": {
+      "default": 2.0,
+      "title": "Water Value",
+      "type": "number"
+    },
+    "liquid_discount_pct": {
+      "default": 0.0,
+      "title": "Liquid Discount Pct",
+      "type": "number"
+    },
+    "oils": {
+      "items": {
+        "$ref": "#/$defs/OilEntry"
+      },
+      "title": "Oils",
+      "type": "array"
+    },
+    "liquids": {
+      "items": {
+        "$ref": "#/$defs/Liquid"
+      },
+      "title": "Liquids",
+      "type": "array"
+    },
+    "additives": {
+      "items": {
+        "$ref": "#/$defs/Additive"
+      },
+      "title": "Additives",
+      "type": "array"
+    },
+    "fragrances": {
+      "items": {
+        "$ref": "#/$defs/Fragrance"
+      },
+      "title": "Fragrances",
+      "type": "array"
+    },
+    "superfat_oils": {
+      "items": {
+        "$ref": "#/$defs/OilEntry"
+      },
+      "title": "Superfat Oils",
+      "type": "array"
+    },
+    "total_oil_weight": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total Oil Weight"
+    },
+    "base_oil_weight": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Base Oil Weight"
+    },
+    "mold": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MoldSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "ignore_warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Ignore Warnings",
+      "type": "array"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    }
+  },
+  "title": "Recipe",
+  "type": "object"
 }

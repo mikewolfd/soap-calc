@@ -1,84 +1,96 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/soap-calc/soap-calc/schemas/oils.schema.json",
-    "title": "Oil Database",
-    "description": "Schema for the oils database (data/oils.json).",
-    "type": "array",
-    "items": {
-        "type": "object",
-        "required": [
-            "name",
-            "sap_koh",
-            "sap_naoh",
-            "fatty_acids"
-        ],
-        "properties": {
-            "name": {
-                "type": "string",
-                "description": "Unique name of the oil (case-insensitive)."
-            },
-            "sap_koh": {
-                "type": "number",
-                "description": "Saponification value for KOH (Potassium Hydroxide)."
-            },
-            "sap_naoh": {
-                "type": "number",
-                "description": "Saponification value for NaOH (Sodium Hydroxide)."
-            },
-            "iodine": {
-                "type": "number",
-                "description": "Average Iodine Value.",
-                "default": 0.0
-            },
-            "ins": {
-                "type": "number",
-                "description": "INS Value (Iodine - SAP).",
-                "default": 0.0
-            },
-            "fatty_acids": {
-                "type": "object",
-                "description": "Fatty acid profile percentages (should sum to approx 100).",
-                "properties": {
-                    "lauric": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "myristic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "palmitic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "stearic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "ricinoleic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "oleic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "linoleic": {
-                        "type": "number",
-                        "default": 0.0
-                    },
-                    "linolenic": {
-                        "type": "number",
-                        "default": 0.0
-                    }
-                },
-                "additionalProperties": false
-            },
-            "notes": {
-                "type": "string",
-                "description": "Optional notes or source information."
-            }
+  "$defs": {
+    "FattyAcidProfile": {
+      "properties": {
+        "lauric": {
+          "default": 0.0,
+          "title": "Lauric",
+          "type": "number"
         },
-        "additionalProperties": false
+        "myristic": {
+          "default": 0.0,
+          "title": "Myristic",
+          "type": "number"
+        },
+        "palmitic": {
+          "default": 0.0,
+          "title": "Palmitic",
+          "type": "number"
+        },
+        "stearic": {
+          "default": 0.0,
+          "title": "Stearic",
+          "type": "number"
+        },
+        "ricinoleic": {
+          "default": 0.0,
+          "title": "Ricinoleic",
+          "type": "number"
+        },
+        "oleic": {
+          "default": 0.0,
+          "title": "Oleic",
+          "type": "number"
+        },
+        "linoleic": {
+          "default": 0.0,
+          "title": "Linoleic",
+          "type": "number"
+        },
+        "linolenic": {
+          "default": 0.0,
+          "title": "Linolenic",
+          "type": "number"
+        }
+      },
+      "title": "FattyAcidProfile",
+      "type": "object"
+    },
+    "Oil": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "sap_naoh": {
+          "title": "Sap Naoh",
+          "type": "number"
+        },
+        "sap_koh": {
+          "title": "Sap Koh",
+          "type": "number"
+        },
+        "fatty_acids": {
+          "$ref": "#/$defs/FattyAcidProfile"
+        },
+        "iodine": {
+          "default": 0.0,
+          "title": "Iodine",
+          "type": "number"
+        },
+        "ins": {
+          "default": 0.0,
+          "title": "Ins",
+          "type": "number"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "sap_naoh",
+        "sap_koh",
+        "fatty_acids"
+      ],
+      "title": "Oil",
+      "type": "object"
     }
+  },
+  "items": {
+    "$ref": "#/$defs/Oil"
+  },
+  "type": "array"
 }

@@ -1,86 +1,78 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/soap-calc/soap-calc/schemas/additives.schema.json",
-    "title": "Additive Database",
-    "description": "Schema for the additives database (data/additives.json).",
-    "type": "array",
-    "items": {
-        "type": "object",
-        "required": [
-            "name",
-            "category",
-            "usage",
-            "stage",
-            "purpose"
-        ],
-        "properties": {
-            "name": {
-                "type": "string",
-                "description": "Name of the additive."
-            },
-            "category": {
-                "type": "string",
-                "description": "Category (e.g., colorant, exfoliant, hardener)."
-            },
-            "usage": {
-                "type": "object",
-                "required": [
-                    "min",
-                    "max",
-                    "unit",
-                    "per"
-                ],
-                "properties": {
-                    "min": {
-                        "type": "number",
-                        "description": "Minimum recommended usage rate."
-                    },
-                    "max": {
-                        "type": "number",
-                        "description": "Maximum recommended usage rate."
-                    },
-                    "unit": {
-                        "type": "string",
-                        "enum": [
-                            "tsp",
-                            "tbsp",
-                            "pct",
-                            "pinch",
-                            "g",
-                            "oz"
-                        ],
-                        "description": "Unit of measurement (pct = percentage)."
-                    },
-                    "per": {
-                        "type": "string",
-                        "enum": [
-                            "lb_oils",
-                            "oil_weight",
-                            "liquid_weight",
-                            "batch_weight"
-                        ],
-                        "description": "Basis for usage calculation."
-                    }
-                },
-                "additionalProperties": false
-            },
-            "lye_adjustment": {
-                "type": "number",
-                "description": "Amount of NaOH consumed per unit of additive (optional). Used for reactive additives like Citric Acid."
-            },
-            "stage": {
-                "type": "string",
-                "description": "Recommended stage to add (e.g. trace, lye, pre_cook, post_cook)."
-            },
-            "purpose": {
-                "type": "string",
-                "description": "Description of effect."
-            },
-            "notes": {
-                "type": "string",
-                "description": "Handling notes or warnings."
-            }
+  "$defs": {
+    "AdditiveInfo": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
         },
-        "additionalProperties": false
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "usage": {
+          "$ref": "#/$defs/AdditiveUsage"
+        },
+        "stage": {
+          "title": "Stage",
+          "type": "string"
+        },
+        "purpose": {
+          "title": "Purpose",
+          "type": "string"
+        },
+        "lye_adjustment": {
+          "default": 0.0,
+          "title": "Lye Adjustment",
+          "type": "number"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "usage",
+        "stage",
+        "purpose"
+      ],
+      "title": "AdditiveInfo",
+      "type": "object"
+    },
+    "AdditiveUsage": {
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "per": {
+          "title": "Per",
+          "type": "string"
+        }
+      },
+      "required": [
+        "min",
+        "max",
+        "unit",
+        "per"
+      ],
+      "title": "AdditiveUsage",
+      "type": "object"
     }
+  },
+  "items": {
+    "$ref": "#/$defs/AdditiveInfo"
+  },
+  "type": "array"
 }
