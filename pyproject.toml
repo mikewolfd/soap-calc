@@ -1,0 +1,18 @@
+[project]
+name = "soap_calc"
+version = "0.1.0"
+description = "A Python package for calculating soap recipes (saponification)."
+authors = [
+    {name = "Michael Deeb", email = "michael.f.deeb@gmail.com"},
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+requires-python = ">=3.9"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+soap-calc = "soap_calc.cli:main"
