@@ -1,0 +1,100 @@
+{
+  "name": "Mike's Hot Process Recipe",
+  "description": "Therapeutic hot process recipe formulated for severely dry and damaged skin. Features high conditioning (58%) and low cleansing (12%) to avoid stripping the skin's protective barrier.\n\n**Key healing ingredients:**\n- **Lanolin (30g)** - Biomimetic barrier repair, closest to human sebum\n- **Shea butter (53g)** - Anti-inflammatory, vitamin-rich superfat\n- **Honey (22g)** - Humectant and natural antibacterial properties\n- **Salt, sodium citrate, sodium lactate** - Hardness, chelation, and DOS prevention\n\nGentle enough for compromised skin while maintaining good hardness and longevity.",
+  "lye_type": "NaOH",
+  "superfat_pct": 10.00,
+  "water_mode": "Water:Lye Ratio",
+  "water_value": 2.0,
+  "base_oil_weight": 1000,
+  "oils": [
+    {
+      "oil": "Almond Oil, sweet",
+      "percentage": 5.0
+    },
+    {
+      "oil": "Olive Oil",
+      "percentage": 20.0
+    },
+    {
+      "oil": "Olive Oil pomace",
+      "percentage": 15.0
+    },
+    {
+      "oil": "Castor Oil",
+      "percentage": 5.0
+    },
+    {
+      "oil": "Coconut Oil, 76 deg",
+      "percentage": 18.0
+    },
+    {
+      "oil": "Beeswax",
+      "percentage": 0.5
+    },
+    {
+      "oil": "Cocoa Butter",
+      "percentage": 5.0
+    },
+    {
+      "oil": "Palm Oil",
+      "percentage": 23.5
+    },
+    {
+      "oil": "Shea Butter",
+      "percentage": 8.0
+    }
+  ],
+  "superfat_oils": [
+    {
+      "oil": "Shea Butter",
+      "percentage": 53.00
+    },
+    {
+      "oil": "Castor Oil",
+      "percentage": 12.00
+    },
+    {
+      "oil": "Olive Oil",
+      "percentage": 5.0
+    },
+    {
+      "oil": "Lanolin liquid Wax",
+      "percentage": 30.0
+    }
+  ],
+  "additives": [
+    {
+      "name": "Salt",
+      "percentage": 1.0,
+      "percent_base": "Oil Weight",
+      "stage": "Lye Liquid"
+    },
+    {
+      "name": "Sodium Citrate",
+      "percentage": 2.0,
+      "percent_base": "Oil Weight",
+      "stage": "Lye Liquid"
+    },
+    {
+      "name": "Sodium Lactate",
+      "percentage": 3.0,
+      "percent_base": "Oil Weight",
+      "stage": "Lye Liquid"
+    },
+    {
+      "name": "Honey",
+      "percentage": 2.0,
+      "percent_base": "Oil Weight",
+      "stage": "Post Cook / After Gel"
+    }
+  ],
+  "fragrances": [
+    {
+      "name": "Lavender",
+      "type": "Essential Oil",
+      "percentage": 1.0,
+      "stage": "Post Cook / After Gel"
+    }
+  ],
+  "notes": "Hot process with post-cook superfat phase. Base oils fully saponified, superfat oils (100g) added after cook to preserve conditioning properties."
+}
