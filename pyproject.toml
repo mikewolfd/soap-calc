@@ -14,5 +14,11 @@ requires-python = ">=3.9"
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+include = ["soap_calc*"]
+
+[tool.setuptools.package-data]
+soap_calc = ["../data/*.json"]
+
 [project.scripts]
 soap-calc = "soap_calc.cli:main"
