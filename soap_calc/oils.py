@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 _OILS_CACHE: Optional[Dict[str, Oil]] = None
 
 
+from pydantic import ValidationError
+
+# ... (imports)
+
 def _load_oils() -> Dict[str, Oil]:
     """Load oils from the package data and user config directory."""
     global _OILS_CACHE
@@ -33,9 +37,9 @@ def _load_oils() -> Dict[str, Oil]:
                 data = json.load(f)
                 for item in data:
                     try:
-                        oil = _parse_oil(item)
+                        oil = Oil.model_validate(item)
                         oils[oil.name.lower()] = oil
-                    except (KeyError, ValueError) as e:
+                    except (KeyError, ValueError, ValidationError) as e:
                         logger.warning(f"Skipping invalid oil entry in data: {e}")
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse {data_path}: {e}")
@@ -50,42 +54,15 @@ def _load_oils() -> Dict[str, Oil]:
                 user_data = json.load(f)
                 for item in user_data:
                     try:
-                        oil = _parse_oil(item)
+                        oil = Oil.model_validate(item)
                         oils[oil.name.lower()] = oil  # Overrides built-ins if name matches
-                    except (KeyError, ValueError) as e:
+                    except (KeyError, ValueError, ValidationError) as e:
                         logger.warning(f"Skipping invalid user oil: {e}")
         except Exception as e:
             logger.warning(f"Failed to load user oils from {user_path}: {e}")
 
     _OILS_CACHE = oils
     return oils
-
-
-def _parse_oil(data: dict) -> Oil:
-    """Parse a dictionary into an Oil object."""
-    fa = data.get("fatty_acids", {})
-    
-    # Construct FattyAcidProfile, defaulting missing acids to 0.0
-    profile = FattyAcidProfile(
-        lauric=float(fa.get("lauric", 0.0)),
-        myristic=float(fa.get("myristic", 0.0)),
-        palmitic=float(fa.get("palmitic", 0.0)),
-        stearic=float(fa.get("stearic", 0.0)),
-        ricinoleic=float(fa.get("ricinoleic", 0.0)),
-        oleic=float(fa.get("oleic", 0.0)),
-        linoleic=float(fa.get("linoleic", 0.0)),
-        linolenic=float(fa.get("linolenic", 0.0)),
-    )
-    
-    return Oil(
-        name=data["name"],
-        sap_naoh=float(data.get("sap_naoh", 0.0)),
-        sap_koh=float(data.get("sap_koh", 0.0)),
-        fatty_acids=profile,
-        iodine=float(data.get("iodine", 0.0)),
-        ins=float(data.get("ins", 0.0)),
-        notes=data.get("notes", ""),
-    )
 
 
 def get_oil(name: str) -> Optional[Oil]:

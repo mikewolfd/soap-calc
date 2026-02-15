@@ -4,7 +4,7 @@ import argparse
 from unittest.mock import MagicMock, patch
 import pytest
 from soap_calc import cli
-from soap_calc.models import Recipe, OilEntry, LyeResult, RecipeResult
+from soap_calc.models import Recipe, OilEntry, LyeResult, RecipeResult, FattyAcidProfile, SoapProperties
 from soap_calc.oils import OLIVE_OIL
 
 @pytest.fixture
@@ -23,8 +23,8 @@ def mock_result():
         liquid_breakdown=[],
         total_oil_weight=500.0,
         total_batch_weight=650.0,
-        fatty_acid_profile=MagicMock(),
-        properties=MagicMock(),
+        fatty_acid_profile=FattyAcidProfile(),
+        properties=SoapProperties(),
     )
 
 class TestCliCommands:

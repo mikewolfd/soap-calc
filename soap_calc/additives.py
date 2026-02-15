@@ -14,19 +14,9 @@ logger = logging.getLogger(__name__)
 _ADDITIVES_CACHE: Optional[Dict[str, AdditiveInfo]] = None
 
 
-def _parse_stage(stage_str: str) -> str:
-    """Normalize stage string from JSON."""
-    s = stage_str.lower().strip()
-    if s == "lye":
-        return Stage.LYE_LIQUID.value
-    elif s == "trace":
-        return Stage.LIGHT_TRACE.value
-    elif s == "pre_cook":
-        return Stage.OIL_PHASE.value
-    elif s == "post_cook":
-        return Stage.POST_COOK.value
-    return s
+from pydantic import ValidationError
 
+# ... (imports)
 
 def _load_additives() -> Dict[str, AdditiveInfo]:
     """Load additives from the package data and user config directory."""
@@ -46,9 +36,9 @@ def _load_additives() -> Dict[str, AdditiveInfo]:
                 data = json.load(f)
                 for item in data:
                     try:
-                        entry = _parse_additive_entry(item)
+                        entry = AdditiveInfo.model_validate(item)
                         additives[entry.name.lower()] = entry
-                    except (KeyError, ValueError) as e:
+                    except (KeyError, ValueError, ValidationError) as e:
                         logger.warning(f"Skipping invalid additive entry: {e}")
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse {data_path}: {e}")
@@ -63,36 +53,15 @@ def _load_additives() -> Dict[str, AdditiveInfo]:
                 user_data = json.load(f)
                 for item in user_data:
                     try:
-                        entry = _parse_additive_entry(item)
+                        entry = AdditiveInfo.model_validate(item)
                         additives[entry.name.lower()] = entry
-                    except (KeyError, ValueError) as e:
+                    except (KeyError, ValueError, ValidationError) as e:
                         logger.warning(f"Skipping invalid user additive: {e}")
         except Exception as e:
             logger.warning(f"Failed to load user additives from {user_path}: {e}")
 
     _ADDITIVES_CACHE = additives
     return additives
-
-
-def _parse_additive_entry(data: dict) -> AdditiveInfo:
-    """Parse a dictionary into an AdditiveInfo object."""
-    usage_data = data.get("usage", {})
-    usage = AdditiveUsage(
-        min=float(usage_data.get("min", 0.0)),
-        max=float(usage_data.get("max", 0.0)),
-        unit=usage_data.get("unit", ""),
-        per=usage_data.get("per", "")
-    )
-    
-    return AdditiveInfo(
-        name=data["name"],
-        category=data.get("category", "additive"),
-        usage=usage,
-        stage=_parse_stage(data.get("stage", "")),
-        purpose=data.get("purpose", ""),
-        lye_adjustment=float(data.get("lye_adjustment", 0.0)),
-        notes=data.get("notes", ""),
-    )
 
 
 def get_additive(name: str) -> Optional[AdditiveInfo]:

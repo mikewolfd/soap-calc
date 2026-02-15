@@ -8,7 +8,7 @@ from soap_calc.validation import validate
 def _basic_recipe(**kwargs):
     return Recipe(
         name="Safety Test",
-        oils=[OilEntry(OLIVE_OIL, 100.0)],
+        oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
         total_oil_weight=500.0,
         **kwargs
     )

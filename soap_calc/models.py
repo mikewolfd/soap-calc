@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field
 from typing import Dict, List, Optional
+from pydantic import BaseModel, Field
 
 
 class LyeType(enum.Enum):
@@ -45,8 +45,7 @@ class PercentBase(enum.Enum):
 # ---------------------------------------------------------------------------
 
 
-@dataclass
-class FattyAcidProfile:
+class FattyAcidProfile(BaseModel):
     lauric: float = 0.0
     myristic: float = 0.0
     palmitic: float = 0.0
@@ -105,8 +104,7 @@ class FattyAcidProfile:
         return self.palmitic + self.stearic
 
 
-@dataclass
-class Oil:
+class Oil(BaseModel):
     name: str
     sap_naoh: float
     sap_koh: float
@@ -116,40 +114,57 @@ class Oil:
     notes: str = ""
 
 
-@dataclass
-class OilEntry:
-    oil: Oil
-    percentage: float  # % of total oils
+from typing import Annotated
+from pydantic import BaseModel, Field, WithJsonSchema
+
+class OilEntry(BaseModel):
+    oil: Annotated[Oil, WithJsonSchema({"type": "string"})]
+    percentage: float = Field(..., ge=0, le=100)  # % of total oils
 
 
-@dataclass
-class Liquid:
+class Liquid(BaseModel):
     name: str
     percentage: float = 100.0  # % of liquid phase
     handling_notes: str = ""
 
 
-@dataclass
-class AdditiveUsage:
+class AdditiveUsage(BaseModel):
     min: float
     max: float
     unit: str
     per: str  # "lb_oils", "oil_weight"
 
 
-@dataclass
-class AdditiveInfo:
+from pydantic import BaseModel, Field, field_validator
+
+# ... (imports)
+
+class AdditiveInfo(BaseModel):
     name: str
     category: str
     usage: AdditiveUsage
     stage: str  # raw string from JSON, or mapped Stage
     purpose: str
-    lye_adjustment: float = 0.0  # grams NaOH per gram of additive
+    lye_adjustment: float = 0.0
     notes: str = ""
 
+    @field_validator("stage", mode="before")
+    @classmethod
+    def normalize_stage(cls, v: str) -> str:
+        s = v.lower().strip()
+        if s == "lye":
+            return Stage.LYE_LIQUID.value
+        elif s == "trace":
+            return Stage.LIGHT_TRACE.value
+        elif s == "pre_cook":
+            return Stage.OIL_PHASE.value
+        elif s == "post_cook":
+            return Stage.POST_COOK.value
+        return v
 
-@dataclass
-class Additive:
+
+
+class Additive(BaseModel):
     name: str
     amount: Optional[float] = None
     percentage: Optional[float] = None
@@ -159,8 +174,7 @@ class Additive:
     notes: str = ""
 
 
-@dataclass
-class Fragrance:
+class Fragrance(BaseModel):
     name: str
     fragrance_type: FragranceType = FragranceType.FRAGRANCE_OIL
     amount: Optional[float] = None
@@ -170,8 +184,7 @@ class Fragrance:
     notes: str = ""
 
 
-@dataclass
-class MoldSpec:
+class MoldSpec(BaseModel):
     length: float
     width: float
     height: float
@@ -204,8 +217,7 @@ OIL_DENSITY_G_PER_CM3 = 0.692
 # ---------------------------------------------------------------------------
 
 
-@dataclass
-class Recipe:
+class Recipe(BaseModel):
     name: str = "Untitled Recipe"
     description: str = ""
     lye_type: LyeType = LyeType.NAOH
@@ -216,15 +228,15 @@ class Recipe:
     water_mode: WaterCalculationMode = WaterCalculationMode.WATER_LYE_RATIO
     water_value: float = 2.0  # value corresponding to mode
     liquid_discount_pct: float = 0.0
-    oils: List[OilEntry] = field(default_factory=list)
-    liquids: List[Liquid] = field(default_factory=lambda: [Liquid(name="Water")])
-    additives: List[Additive] = field(default_factory=list)
-    fragrances: List[Fragrance] = field(default_factory=list)
-    superfat_oils: List[OilEntry] = field(default_factory=list)  # If present, these define the Superfat Phase
+    oils: List[OilEntry] = Field(default_factory=list)
+    liquids: List[Liquid] = Field(default_factory=lambda: [Liquid(name="Water")])
+    additives: List[Additive] = Field(default_factory=list)
+    fragrances: List[Fragrance] = Field(default_factory=list)
+    superfat_oils: List[OilEntry] = Field(default_factory=list)  # If present, these define the Superfat Phase
     total_oil_weight: Optional[float] = None  # grams — total batch oils (base + superfat)
     base_oil_weight: Optional[float] = None   # grams — base oils only (excludes superfat)
     mold: Optional[MoldSpec] = None
-    ignore_warnings: List[str] = field(default_factory=list)
+    ignore_warnings: List[str] = Field(default_factory=list)
     notes: str = ""
 
     def resolve_oil_weight(self, override: Optional[float] = None) -> float:
@@ -260,8 +272,7 @@ class Recipe:
 # ---------------------------------------------------------------------------
 
 
-@dataclass
-class LyeResult:
+class LyeResult(BaseModel):
     naoh_amount: float = 0.0
     koh_amount: float = 0.0
 
@@ -270,8 +281,7 @@ class LyeResult:
         return self.naoh_amount + self.koh_amount
 
 
-@dataclass
-class LiquidBreakdown:
+class LiquidBreakdown(BaseModel):
     name: str
     amount: float
     handling_notes: str = ""
@@ -283,8 +293,7 @@ class PropertyRating(enum.Enum):
     ABOVE = "Above"
 
 
-@dataclass
-class PropertyValue:
+class PropertyValue(BaseModel):
     name: str = ""
     value: float = 0.0
     low: float = 0.0
@@ -304,43 +313,34 @@ PROPERTY_RANGES = {
 }
 
 
-@dataclass
-class SoapProperties:
-    hardness: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Hardness", 0, *PROPERTY_RANGES["hardness"], PropertyRating.BELOW)
+class SoapProperties(BaseModel):
+    hardness: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Hardness", value=0, low=PROPERTY_RANGES["hardness"][0], high=PROPERTY_RANGES["hardness"][1], rating=PropertyRating.BELOW)
     )
-    cleansing: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Cleansing", 0, *PROPERTY_RANGES["cleansing"], PropertyRating.BELOW)
+    cleansing: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Cleansing", value=0, low=PROPERTY_RANGES["cleansing"][0], high=PROPERTY_RANGES["cleansing"][1], rating=PropertyRating.BELOW)
     )
-    conditioning: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Conditioning", 0, *PROPERTY_RANGES["conditioning"], PropertyRating.BELOW)
+    conditioning: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Conditioning", value=0, low=PROPERTY_RANGES["conditioning"][0], high=PROPERTY_RANGES["conditioning"][1], rating=PropertyRating.BELOW)
     )
-    bubbly_lather: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Bubbly Lather", 0, *PROPERTY_RANGES["bubbly_lather"], PropertyRating.BELOW)
+    bubbly_lather: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Bubbly Lather", value=0, low=PROPERTY_RANGES["bubbly_lather"][0], high=PROPERTY_RANGES["bubbly_lather"][1], rating=PropertyRating.BELOW)
     )
-    creamy_lather: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Creamy Lather", 0, *PROPERTY_RANGES["creamy_lather"], PropertyRating.BELOW)
+    creamy_lather: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Creamy Lather", value=0, low=PROPERTY_RANGES["creamy_lather"][0], high=PROPERTY_RANGES["creamy_lather"][1], rating=PropertyRating.BELOW)
     )
-    longevity: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Longevity", 0, *PROPERTY_RANGES["longevity"], PropertyRating.BELOW)
+    longevity: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Longevity", value=0, low=PROPERTY_RANGES["longevity"][0], high=PROPERTY_RANGES["longevity"][1], rating=PropertyRating.BELOW)
     )
-    iodine: PropertyValue = field(
-        default_factory=lambda: PropertyValue("Iodine", 0, *PROPERTY_RANGES["iodine"], PropertyRating.BELOW)
+    iodine: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="Iodine", value=0, low=PROPERTY_RANGES["iodine"][0], high=PROPERTY_RANGES["iodine"][1], rating=PropertyRating.BELOW)
     )
-    ins: PropertyValue = field(
-        default_factory=lambda: PropertyValue("INS", 0, *PROPERTY_RANGES["ins"], PropertyRating.BELOW)
+    ins: PropertyValue = Field(
+        default_factory=lambda: PropertyValue(name="INS", value=0, low=PROPERTY_RANGES["ins"][0], high=PROPERTY_RANGES["ins"][1], rating=PropertyRating.BELOW)
     )
-    cleansing: PropertyValue = field(default_factory=lambda: PropertyValue("Cleansing", 0, 12, 22, PropertyRating.BELOW))
-    conditioning: PropertyValue = field(default_factory=lambda: PropertyValue("Conditioning", 0, 44, 69, PropertyRating.BELOW))
-    bubbly_lather: PropertyValue = field(default_factory=lambda: PropertyValue("Bubbly", 0, 14, 46, PropertyRating.BELOW))
-    creamy_lather: PropertyValue = field(default_factory=lambda: PropertyValue("Creamy", 0, 16, 48, PropertyRating.BELOW))
-    longevity: PropertyValue = field(default_factory=lambda: PropertyValue("Longevity", 0, 25, 50, PropertyRating.BELOW))
-    iodine: PropertyValue = field(default_factory=lambda: PropertyValue("Iodine", 0, 41, 70, PropertyRating.BELOW))
-    ins: PropertyValue = field(default_factory=lambda: PropertyValue("INS", 0, 136, 170, PropertyRating.BELOW))
 
 
-@dataclass
-class AdditiveResult:
+class AdditiveResult(BaseModel):
     name: str
     amount: float
     stage: Stage
@@ -348,8 +348,7 @@ class AdditiveResult:
     notes: str = ""
 
 
-@dataclass
-class RecipeResult:
+class RecipeResult(BaseModel):
     lye: LyeResult
     total_liquid: float
     liquid_breakdown: List[LiquidBreakdown]
@@ -357,11 +356,11 @@ class RecipeResult:
     total_batch_weight: float
     fatty_acid_profile: FattyAcidProfile
     properties: SoapProperties
-    additives: List[AdditiveResult] = field(default_factory=list)
-    fragrances: List[AdditiveResult] = field(default_factory=list)
-    superfat_oils: List[AdditiveResult] = field(default_factory=list)  # Post-cook / superfat oils
+    additives: List[AdditiveResult] = Field(default_factory=list)
+    fragrances: List[AdditiveResult] = Field(default_factory=list)
+    superfat_oils: List[AdditiveResult] = Field(default_factory=list)  # Post-cook / superfat oils
     effective_superfat_pct: float = 0.0  # Combined lye discount + superfat oils
-    warnings: List[str] = field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
 
     # Per-stage ingredient grouping -----------------------------------------
 

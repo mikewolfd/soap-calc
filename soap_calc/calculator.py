@@ -222,9 +222,9 @@ def calculate(
     if total_liq_pct > 0:
          for liq in recipe.liquids:
             amount = round(total_liquid * liq.percentage / total_liq_pct, 2)
-            liquid_breakdown.append(LiquidBreakdown(liq.name, amount, liq.handling_notes))
+            liquid_breakdown.append(LiquidBreakdown(name=liq.name, amount=amount, handling_notes=liq.handling_notes))
     else:
-        liquid_breakdown.append(LiquidBreakdown("Water", total_liquid))
+        liquid_breakdown.append(LiquidBreakdown(name="Water", amount=total_liquid))
 
 
     # 6. Process Additives
