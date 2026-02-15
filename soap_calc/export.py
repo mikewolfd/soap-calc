@@ -38,7 +38,7 @@ _STAGE_INSTRUCTIONS = {
     Stage.LIGHT_TRACE: (
         "**Combine & reach light trace.** When both lye solution and oils are "
         "at temperature, pour the lye solution into the oils and blend with a "
-        "stick blender until light trace. Add the following ingredients:"
+        "stick blender until light trace."
     ),
     Stage.MEDIUM_TRACE: (
         "**Medium trace.** Continue blending until the batter thickens to "
@@ -86,12 +86,19 @@ def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
 
     # --- Header -----------------------------------------------------------
     a(f"# 🧼 {recipe.name}\n")
+
+    # Description (if present)
+    if recipe.description:
+        a(f"{recipe.description}\n")
+
     a(f"**Total base oil weight:** {total_base_oil:.0f} g  ")
     a(f"**Total batch weight:** {result.total_batch_weight:.0f} g  ")
     
     if recipe.superfat_oils:
         # Split Phase Mode
+        total_superfat_oil = sum(sf.amount for sf in result.superfat_oils)
         a(f"**Superfat Phase (Post-Cook):** {recipe.superfat_pct:.1f} % of Total Oil  ")
+        a(f"**Total superfat oil weight:** {total_superfat_oil:.1f} g  ")
         a(f"**Lye Discount on Base Phase:** 0 %  ")
     else:
         # Standard Mode
@@ -180,6 +187,7 @@ def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
         props.conditioning,
         props.bubbly_lather,
         props.creamy_lather,
+        props.longevity,
         props.iodine,
         props.ins,
     ]:
@@ -217,16 +225,32 @@ def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
     by_stage = result.ingredients_by_stage()
 
     step = 1
+
+    # Safety & Preparation (always first)
+    a(f"### Step {step}: Preparation\n")
+    a(
+        "**Gather your equipment and safety gear.** Put on goggles, "
+        "chemical-resistant gloves, and long sleeves. Work in a well-ventilated "
+        "area. Prepare your mold and line it if needed. Have all ingredients "
+        "pre-measured and ready.\n"
+    )
+    step += 1
+
     for stage in _STAGE_ORDER:
         instruction = _STAGE_INSTRUCTIONS.get(stage, "")
         items = by_stage.get(stage, [])
 
-        if not items and stage not in (Stage.LYE_LIQUID, Stage.OIL_PHASE):
+        # Always show Lye Liquid, Oil Phase, and Light Trace (the combine step)
+        if not items and stage not in (Stage.LYE_LIQUID, Stage.OIL_PHASE, Stage.LIGHT_TRACE):
             continue
 
         a(f"### Step {step}: {stage.value}\n")
         if instruction:
-            a(f"{instruction}\n")
+            # Append "Add the following" only when Light Trace has items
+            if stage == Stage.LIGHT_TRACE and items:
+                a(f"{instruction} Add the following ingredients:\n")
+            else:
+                a(f"{instruction}\n")
 
         if stage == Stage.OIL_PHASE:
             for entry in recipe.oils:
