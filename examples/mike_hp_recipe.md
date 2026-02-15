@@ -42,10 +42,22 @@ Gentle enough for compromised skin while maintaining good hardness and longevity
 | Olive Oil | 5.0 |
 | Lanolin liquid Wax | 30.0 |
 
+### Superfat Character
+
+**Film Persistence:** High — How well the superfat resists wash-off and leaves a skin barrier  
+**Emollient Slip:** Moderate — Silky after-feel from liquid oils remaining on skin  
+**Lather Impact:** High — How much the free oil phase suppresses foam  
+**DOS Risk:** Low — Likelihood of rancidity from polyunsaturated oils in the superfat  
+
+Solid-at-skin-temp fats resist wash-off, leaving a protective barrier; moderate emollient slip from liquid oils; high lather suppression from free oils.
+
+> *Based on the unsaponified oil phase. Actual feel also depends on
+> base soap composition and superfat percentage.*
+
 ## Lye & Liquid
 
-- **NaOH:** 144.24 g
-- **Total liquid:** 288.48 g
+- **NaOH:** 144.23 g
+- **Total liquid:** 288.46 g
 
 ## Additives
 
