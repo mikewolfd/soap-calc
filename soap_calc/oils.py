@@ -84,16 +84,3 @@ def search_oils(query: str) -> List[Oil]:
     matches = [o for name, o in oils.items() if q in name]
     return sorted(matches, key=lambda o: o.name.lower())
 
-# Common oils exported for convenience
-def _require_oil(name: str) -> Oil:
-    oil = get_oil(name)
-    if not oil:
-        # Fallback for testing/initialization if DB is missing items
-        return Oil(name=name, sap_naoh=0.0, sap_koh=0.0, fatty_acids=FattyAcidProfile())
-    return oil
-
-OLIVE_OIL = _require_oil("Olive Oil")
-COCONUT_OIL_76 = _require_oil("Coconut Oil, 76 deg")
-SHEA_BUTTER = _require_oil("Shea Butter")
-CASTOR_OIL = _require_oil("Castor Oil")
-PALM_OIL = _require_oil("Palm Oil")
