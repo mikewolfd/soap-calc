@@ -1,6 +1,16 @@
 # Soap Calc
 
-A powerful soap-making calculator and recipe manager, designed to provide comprehensive data analysis and clear instructions for cold and hot process soap making.
+[![PyPI](https://img.shields.io/pypi/v/soap-calc.svg)](https://pypi.org/project/soap-calc/)
+
+**The first Python-based soap formulation library.** Define recipes in JSON, calculate lye and water amounts, predict soap properties, and export printable instructions—all from the command line or through AI agents like Claude Code.
+
+Traditional web calculators lock your formulas in HTML forms. Soap Calc treats recipes as code: version them with git, iterate programmatically, and collaborate with AI to brainstorm oils, debug formulations, and scale batches. Ask "Create a moisturizing bar soap for dry skin" or "Why is this recipe too soft?" and get structured, chemically sound answers.
+
+Every calculation is transparent and reproducible. No proprietary formulas, no hidden assumptions—just saponification chemistry you can audit and extend.
+
+## Background
+
+Inspired by [Soapmaking Friend](https://www.soapmakingfriend.com/), this project reimagines soap calculation as a Python library. Built collaboratively with AI tools including antigravity by Google, Gemini 3 Pro, and Claude Opus 4.6.
 
 ## Features
 
@@ -111,17 +121,35 @@ Create recipes in JSON or YAML. Here is a feature-rich example:
 
 This package requires Python 3.9 or higher.
 
-To install the package in editable mode (recommended for development):
+Install from [PyPI](https://pypi.org/project/soap-calc/):
 
 ```bash
+pip install soap-calc
+```
+
+Or install in editable mode for development:
+
+```bash
+git clone https://github.com/mikewolfd/soap-calc.git
+cd soap-calc
 pip install -e .
 ```
 
-To install as a regular package:
+## Built-in Claude Code Skill
 
-```bash
-pip install .
-```
+This repository includes a soap formulation skill for Claude Code (`.agent/skills/soap-formulation/`). The skill combines expert formulation guidance with the calculation engine to help you design, troubleshoot, and refine recipes through conversation.
+
+**What it does:**
+- Generates recipes from natural language descriptions ("moisturizing bar with shea butter")
+- Troubleshoots formulation problems ("why is my soap soft?", "how do I fix DOS?")
+- Suggests oil substitutions based on fatty acid profiles and SAP values
+- Validates recipes against formulation best practices before calculation
+- Provides safety guidance for lye handling and pH testing
+
+**How it works:**
+The skill consults `soap-formulation-expert-reference.md` for fatty acid balance targets and formulation archetypes, searches the oil database to verify ingredient names, writes recipe files, validates them, runs calculations, and exports formatted instructions—all while explaining the chemistry and design choices.
+
+Try: *"Create a conditioning shampoo bar recipe"* or *"Why does my castile soap take forever to harden?"*
 
 ## Usage
 
