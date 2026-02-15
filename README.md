@@ -1,6 +1,7 @@
 # Soap Calc
 
 [![PyPI](https://img.shields.io/pypi/v/soap-calc.svg)](https://pypi.org/project/soap-calc/)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-orange)](https://docs.anthropic.com/en/docs/claude-code)
 
 > [!CAUTION]
 > **Handle Lye with Care.** Sodium Hydroxide (NaOH) and Potassium Hydroxide (KOH) are caustic chemicals that cause severe burns. Always wear safety goggles and gloves. Verify all calculations before use.
@@ -10,6 +11,41 @@
 Traditional web calculators lock your formulas in HTML forms. Soap Calc treats recipes as code: version them with git, iterate programmatically, and collaborate with AI to brainstorm oils, debug formulations, and scale batches. Ask "Create a moisturizing bar soap for dry skin" or "Why is this recipe too soft?" and get structured, chemically sound answers.
 
 Every calculation is transparent and reproducible. No proprietary formulas, no hidden assumptions—just saponification chemistry you can audit and extend.
+
+## Claude Code Plugin
+
+> **Skip the CLI — formulate soap through conversation.** This repository doubles as a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin. Ask *"Create a moisturizing bar with shea butter"* or *"Why is my soap too soft?"* and get validated, calculated recipes with full chemistry explanations.
+
+```bash
+pip install soap-calc
+claude plugin install https://github.com/mikewolfd/soap-calc
+```
+
+The plugin adds two skills to your Claude Code sessions:
+
+#### 🧪 Soap Formulation
+
+Expert formulation guidance combined with the calculation engine. Design, troubleshoot, and refine recipes through conversation.
+
+- Generate recipes from plain English (*"conditioning shampoo bar"*, *"gentle baby soap"*)
+- Troubleshoot problems (*"why is my soap soft?"*, *"how do I fix DOS?"*)
+- Get oil substitution advice based on fatty acid profiles and SAP values
+- Validate against formulation best practices before calculation
+- Safety guidance for lye handling and pH testing
+
+The skill consults a built-in expert reference for fatty acid balance targets and formulation archetypes, verifies oil names against the database, writes recipe files, validates, calculates, and exports — all while explaining the chemistry.
+
+#### 📦 Inventory Management
+
+Track your oils, butters, and additives. The skill cross-references items against the verified database and saves them for use in formulation.
+
+- Resolves ambiguous names (e.g., "coconut oil" → prompts for specific variant)
+- Flags unverified items not in the database
+- Saves inventory to `~/.soap_calc/inventory.md` (global) or `./inventory.md` (project-specific)
+
+**Try:** *"I have olive oil, coconut oil, shea butter, and sodium lactate"* then later *"Create a recipe using my inventory"*
+
+> **Note:** Inventory is only used when you explicitly ask. Otherwise, formulations draw from the full oil database.
 
 ## Background
 
@@ -138,83 +174,9 @@ cd soap-calc
 pip install -e .
 ```
 
-## Built-in Claude Code Plugin
+## CLI Usage
 
-This repository is also a Claude Code plugin with two skills for AI-assisted soap making.
-
-### **Installation**
-
-**Both installations are required:**
-
-```bash
-# 1. Install the Python package (provides the soap-calc CLI and library)
-pip install soap-calc
-
-# 2. Install the Claude Code plugin (provides AI skills)
-claude plugin install https://github.com/mikewolfd/soap-calc
-```
-
-After installation, the skills will be available in any Claude Code session. The skills use the `soap-calc` CLI and Python API, so the Python package must be installed for them to function.
-
-**For development:** If you're working on the plugin itself, install from a local clone:
-
-```bash
-# Clone the repository
-git clone https://github.com/mikewolfd/soap-calc.git
-cd soap-calc
-
-# Install Python package in editable mode
-pip install -e .
-
-# Install plugin from local directory
-claude plugin install .
-```
-
----
-
-### 🧪 **Soap Formulation** (`skills/soap-formulation/`)
-
-Expert formulation guidance combined with the calculation engine to help you design, troubleshoot, and refine recipes through conversation.
-
-**What it does:**
-- Generates recipes from natural language descriptions ("moisturizing bar with shea butter")
-- Troubleshoots formulation problems ("why is my soap soft?", "how do I fix DOS?")
-- Suggests oil substitutions based on fatty acid profiles and SAP values
-- Validates recipes against formulation best practices before calculation
-- Provides safety guidance for lye handling and pH testing
-
-**How it works:**
-The skill consults `soap-formulation-expert-reference.md` for fatty acid balance targets and formulation archetypes, searches the oil database to verify ingredient names, writes recipe files, validates them, runs calculations, and exports formatted instructions—all while explaining the chemistry and design choices.
-
-**Try asking:** *"Create a conditioning shampoo bar recipe"* or *"Why does my castile soap take forever to harden?"*
-
----
-
-### 📦 **Inventory Management** (`skills/inventory/`)
-
-Track your oils, butters, and additives. The skill cross-references your items against the verified database and saves them for use in formulation.
-
-**What it does:**
-- Validates items against the oil and additive databases
-- Resolves ambiguous names (e.g., "coconut oil" → prompts for specific variant)
-- Flags unverified items not in the database
-- Saves your inventory for use in recipe formulation
-
-**Inventory locations (hybrid approach):**
-- **`~/.soap_calc/inventory.md`** — Your global inventory (default, follows you across projects)
-- **`./inventory.md`** — Project-specific inventory (optional, overrides global)
-
-The skill checks the current directory first, then falls back to your global inventory.
-
-**Try saying:** *"I have olive oil, coconut oil, shea butter, and sodium lactate"*
-
-**Using your inventory:** *"Create a recipe using my inventory"* or *"What can I make with what I have?"*
-
-**Note:** The inventory is only used when you explicitly ask. Otherwise, formulations use the full database.
-
-## Usage
-
-Once installed, the `soap-calc` command is available in your terminal.
+The `soap-calc` CLI is available after installation.
 
 ### Validate a Recipe
 Check a recipe file for potential issues:
