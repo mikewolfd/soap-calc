@@ -64,6 +64,10 @@
                 },
                 "additionalProperties": false
             },
+            "lye_adjustment": {
+                "type": "number",
+                "description": "Amount of NaOH consumed per unit of additive (optional). Used for reactive additives like Citric Acid."
+            },
             "stage": {
                 "type": "string",
                 "description": "Recommended stage to add (e.g. trace, lye, pre_cook, post_cook)."
