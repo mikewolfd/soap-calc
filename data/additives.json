@@ -280,9 +280,9 @@
       "unit": "tbsp",
       "per": "lb_oils"
     },
-    "stage": "trace",
+    "stage": "post_cook",
     "purpose": "Lather booster; adds sugars",
-    "notes": "Can cause soap to accelerate or overheat. Use lower temperatures and consider refrigerating the mold."
+    "notes": "Best added post-cook in HP soap to prevent burning/caramelizing. For CP soap, can add at trace but may accelerate or overheat — use lower temperatures and refrigerate the mold."
   },
   {
     "name": "Kaolin Clay",
