@@ -1,0 +1,8 @@
+include pyproject.toml
+include setup.py
+include README.md
+recursive-include soap_calc *.py
+recursive-include data *.json
+recursive-include schemas *.json
+recursive-include scripts *.py
+recursive-include examples *.json
