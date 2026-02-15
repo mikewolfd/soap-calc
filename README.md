@@ -147,15 +147,28 @@ This repository is also a Claude Code plugin with two skills for AI-assisted soa
 **Both installations are required:**
 
 ```bash
-# 1. Install the Python package first (required for skills to work)
-cd /path/to/soap-calc
-pip install -e .
+# 1. Install the Python package (provides the soap-calc CLI and library)
+pip install soap-calc
 
-# 2. Install the Claude Code plugin (registers the skills)
-claude plugin install .
+# 2. Install the Claude Code plugin (provides AI skills)
+claude plugin install https://github.com/mikewolfd/soap-calc
 ```
 
 After installation, the skills will be available in any Claude Code session. The skills use the `soap-calc` CLI and Python API, so the Python package must be installed for them to function.
+
+**For development:** If you're working on the plugin itself, install from a local clone:
+
+```bash
+# Clone the repository
+git clone https://github.com/mikewolfd/soap-calc.git
+cd soap-calc
+
+# Install Python package in editable mode
+pip install -e .
+
+# Install plugin from local directory
+claude plugin install .
+```
 
 ---
 
