@@ -340,6 +340,15 @@ class SoapProperties(BaseModel):
     )
 
 
+class SkinFeel(BaseModel):
+    """Superfat character profile for post-cook oil blends in soap."""
+    film_persistence: str  # "Low", "Moderate", "High"
+    emollient_slip: str    # "Low", "Moderate", "High"
+    lather_impact: str     # "Low", "Moderate", "High", "Very High"
+    dos_risk: str          # "Low", "Moderate", "High"
+    description: str       # Generated narrative combining meaningful dimensions
+
+
 class AdditiveResult(BaseModel):
     name: str
     amount: float
@@ -360,6 +369,7 @@ class RecipeResult(BaseModel):
     fragrances: List[AdditiveResult] = Field(default_factory=list)
     superfat_oils: List[AdditiveResult] = Field(default_factory=list)  # Post-cook / superfat oils
     effective_superfat_pct: float = 0.0  # Combined lye discount + superfat oils
+    superfat_analysis: Optional[SkinFeel] = None
     warnings: List[str] = Field(default_factory=list)
 
     # Per-stage ingredient grouping -----------------------------------------
