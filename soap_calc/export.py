@@ -61,7 +61,7 @@ _STAGE_INSTRUCTIONS = {
 def _fmt_pv(pv) -> str:
     """Format a PropertyValue for the properties table."""
     icon = {"Below": "⬇️", "Within": "✅", "Above": "⬆️"}.get(pv.rating.value, "")
-    return f"{pv.value:.0f} ({pv.low}–{pv.high}) {icon}"
+    return f"{pv.value:.0f} ({pv.low:.0f}–{pv.high:.0f}) {icon}"
 
 
 def _draw_bar(value: float, max_value: float = 100.0, width: int = 15) -> str:
@@ -140,6 +140,22 @@ def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
         for entry in result.superfat_oils:
             a(f"| {entry.name} | {entry.amount:.1f} |")
         a("")
+
+    # --- Superfat Analysis ------------------------------------------------
+    if result.superfat_analysis:
+        sf = result.superfat_analysis
+        a("### Superfat Character\n")
+        a(f"**Film Persistence:** {sf.film_persistence} — "
+          "How well the superfat resists wash-off and leaves a skin barrier  ")
+        a(f"**Emollient Slip:** {sf.emollient_slip} — "
+          "Silky after-feel from liquid oils remaining on skin  ")
+        a(f"**Lather Impact:** {sf.lather_impact} — "
+          "How much the free oil phase suppresses foam  ")
+        a(f"**DOS Risk:** {sf.dos_risk} — "
+          "Likelihood of rancidity from polyunsaturated oils in the superfat  ")
+        a(f"\n{sf.description}\n")
+        a("> *Based on the unsaponified oil phase. Actual feel also depends on")
+        a("> base soap composition and superfat percentage.*\n")
 
     # --- Lye & Liquid -----------------------------------------------------
     a("## Lye & Liquid\n")

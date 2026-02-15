@@ -20,6 +20,7 @@ from soap_calc.models import (
     WaterCalculationMode,
 )
 from soap_calc.properties import blend_fatty_acids, predict_properties
+from soap_calc.skin_feel import analyze_skin_feel
 from soap_calc.validation import validate
 
 
@@ -374,7 +375,7 @@ def calculate(
         2
     )
     
-    warnings = fragrance_warnings[:]
+    warnings: List[str] = fragrance_warnings[:]
     if run_validation:
         warnings.extend(validate(recipe))
         
@@ -385,6 +386,16 @@ def calculate(
                 filtered_warnings.append(w)
     else:
         filtered_warnings = warnings
+
+    skin_feel = (
+        analyze_skin_feel(
+            recipe.superfat_oils,
+            base_oils=recipe.oils,
+            superfat_pct=recipe.superfat_pct,
+        )
+        if recipe.superfat_oils
+        else None
+    )
 
     return RecipeResult(
         lye=lye,
@@ -398,5 +409,6 @@ def calculate(
         fragrances=fragrance_results,
         superfat_oils=superfat_results,
         effective_superfat_pct=effective_superfat,
+        superfat_analysis=skin_feel,
         warnings=filtered_warnings
     )
