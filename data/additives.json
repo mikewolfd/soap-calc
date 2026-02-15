@@ -1,0 +1,504 @@
+[
+  {
+    "name": "Activated Charcoal",
+    "category": "colorant",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Natural colorant - gray to black",
+    "notes": "Can also be added at trace for swirling effects."
+  },
+  {
+    "name": "Aloe Powder",
+    "category": "additive",
+    "usage": {
+      "min": 0.5,
+      "max": 0.5,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Slip and silkiness"
+  },
+  {
+    "name": "Apricot Kernel Seeds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and speckled appearance"
+  },
+  {
+    "name": "Baking Soda",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Deodorizer and gentle abrasive; can boost hardness slightly",
+    "notes": "Dissolve in a small amount of water before adding"
+  },
+  {
+    "name": "Beeswax",
+    "category": "hardener",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "pre_cook",
+    "purpose": "Adds hardness to soap",
+    "notes": "Melt with hard oils and butters. Too much makes soap draggy."
+  },
+  {
+    "name": "Blueberry Seeds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and speckled appearance"
+  },
+  {
+    "name": "Buttermilk Powder",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Creaminess and lather booster"
+  },
+  {
+    "name": "Clay",
+    "category": "colorant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "lye",
+    "purpose": "Natural colorant and light exfoliation",
+    "notes": "Add to lye water to draw out more color, or add at trace for swirling"
+  },
+  {
+    "name": "Cocoa Powder",
+    "category": "colorant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Natural colorant (brown)",
+    "notes": "Add to warm oils"
+  },
+  {
+    "name": "Coconut Milk Powder",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Creaminess and lather booster"
+  },
+  {
+    "name": "Coffee Grounds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 2.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and color",
+    "notes": "Stir in gently at light trace. Can also steep in lye water first to pull out more color."
+  },
+  {
+    "name": "Corn Meal",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation"
+  },
+  {
+    "name": "Cranberry Seeds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and speckled appearance"
+  },
+  {
+    "name": "Dried Calendula",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and natural yellow/gold color; one of the few botanicals that retains its color in CP soap"
+  },
+  {
+    "name": "Dried Lavender",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and visual interest; turns black/brown in CP soap"
+  },
+  {
+    "name": "Dried Rose Buds",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and visual interest; turns black/brown in CP soap"
+  },
+  {
+    "name": "Glycerin",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 2.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Humectant that draws moisture to skin; adds transparency in M&P soap",
+    "notes": "Can also add at trace"
+  },
+  {
+    "name": "Goat Milk Powder",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Creaminess and lather booster"
+  },
+  {
+    "name": "Green Clay",
+    "category": "colorant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Natural colorant (green); also drawing and detoxifying for oily/problem skin",
+    "notes": "Mix with a small amount of oil or water to disperse before adding"
+  },
+  {
+    "name": "Ground Peppermint",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation; turns black/brown in soap"
+  },
+  {
+    "name": "Ground Rosemary",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation; turns black/brown in soap"
+  },
+  {
+    "name": "Ground Spearmint",
+    "category": "botanical",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation; turns black/brown in soap"
+  },
+  {
+    "name": "Honey",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Lather booster; adds sugars",
+    "notes": "Can cause soap to accelerate or overheat. Use lower temperatures and consider refrigerating the mold."
+  },
+  {
+    "name": "Kaolin Clay",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Anchors fragrance, adds slip, gentle detoxifying clay; also used as a mild colorant",
+    "notes": "Mix with a small amount of distilled water or oil to disperse before adding"
+  },
+  {
+    "name": "Lactic Acid",
+    "category": "hardener",
+    "usage": {
+      "min": 3.0,
+      "max": 8.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "lye",
+    "purpose": "Produces sodium lactate in situ; adds hardness and speeds unmolding",
+    "notes": "Add to cooled lye solution; lye will neutralize it into sodium lactate"
+  },
+  {
+    "name": "Mermaid Blue Mica",
+    "category": "colorant",
+    "usage": {
+      "min": 0.25,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Cosmetic colorant — shimmery blue",
+    "notes": "Mix with a small amount of lightweight oil to disperse. Can be used for swirling."
+  },
+  {
+    "name": "Oatmeal",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tbsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Wonderful for irritated and sensitive skin; also a gentle exfoliant",
+    "notes": "Stir in gently at light trace. Powder in a food processor first if you want less exfoliation."
+  },
+  {
+    "name": "Orange Peel Powder",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 2.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and color"
+  },
+  {
+    "name": "Pine Tar",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 5.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "pre_cook",
+    "purpose": "Traditional remedy for eczema, psoriasis, and dandruff; adds dark color",
+    "notes": "Warm before adding. Accelerates trace significantly. Start low — strong scent."
+  },
+  {
+    "name": "Poppy Seeds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and speckled appearance"
+  },
+  {
+    "name": "Raspberry Seeds",
+    "category": "exfoliant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Exfoliation and speckled appearance"
+  },
+  {
+    "name": "Rose (Pink) Clay",
+    "category": "colorant",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "Natural colorant — light pink; gentle and suitable for sensitive skin",
+    "notes": "Mix with a small amount of oil or water to disperse before adding"
+  },
+  {
+    "name": "Salt",
+    "category": "hardener",
+    "usage": {
+      "min": 0.5,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "lye",
+    "purpose": "Adds hardness to soap",
+    "notes": "Must dissolve in hot lye solution"
+  },
+  {
+    "name": "Silk Fibers",
+    "category": "additive",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "pinch",
+      "per": "lb_oils"
+    },
+    "stage": "lye",
+    "purpose": "Slip and silkiness",
+    "notes": "Dissolve in hot lye solution; fibers will fully dissolve"
+  },
+  {
+    "name": "Sodium Acetate",
+    "category": "hardener",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "lye",
+    "purpose": "Mild hardening agent; reduces soap scum",
+    "notes": "Dissolve in a small amount of warm water before adding to cooled lye solution"
+  },
+  {
+    "name": "Sodium Citrate",
+    "category": "hardener",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "lye",
+    "purpose": "Chelating agent that reduces soap scum in hard water; acts as a water softener in the bar",
+    "notes": "Dissolve in a small amount of warm water before adding to cooled lye solution"
+  },
+  {
+    "name": "Sodium Lactate",
+    "category": "hardener",
+    "usage": {
+      "min": 1.0,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "lye",
+    "purpose": "Adds hardness to soap; speeds unmolding",
+    "notes": "Add to cooled lye water. Too much can make soap crumbly."
+  },
+  {
+    "name": "Sugar",
+    "category": "additive",
+    "usage": {
+      "min": 0.5,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "lye",
+    "purpose": "Lather booster",
+    "notes": "Add to warm lye solution to dissolve"
+  },
+  {
+    "name": "Titanium Dioxide",
+    "category": "colorant",
+    "usage": {
+      "min": 0.5,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "trace",
+    "purpose": "White colorant; used to whiten soap base or lighten other colors",
+    "notes": "Mix with a small amount of lightweight oil to disperse (oil-dispersed TD is easiest)"
+  },
+  {
+    "name": "Vitamin E (Tocopherol)",
+    "category": "additive",
+    "usage": {
+      "min": 0.5,
+      "max": 1.0,
+      "unit": "tsp",
+      "per": "lb_oils"
+    },
+    "stage": "pre_cook",
+    "purpose": "Antioxidant that extends shelf life of oils prone to rancidity (DOS); beneficial for skin"
+  }
+]
