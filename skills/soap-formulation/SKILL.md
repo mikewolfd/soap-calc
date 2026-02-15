@@ -158,7 +158,7 @@ Always include safety notes when generating recipes or process instructions:
 
 ## Inventory-Aware Formulation
 
-The project includes an **Inventory Management** skill (`.agent/skills/inventory/SKILL.md`) that saves a validated `inventory.md` file listing the user's available oils and additives.
+The project includes an **Inventory Management** skill (`skills/inventory/SKILL.md`) that saves a validated `inventory.md` file listing the user's available oils and additives.
 
 **Only use the inventory when the user explicitly asks.** Look for phrases like:
 - "use my inventory" / "from what I have"
@@ -166,7 +166,10 @@ The project includes an **Inventory Management** skill (`.agent/skills/inventory
 - "formulate using my supplies"
 
 When inventory is requested:
-1. Read `inventory.md` from the project root.
+1. **Find the inventory file** (priority order):
+   - Check `./inventory.md` (current directory) first
+   - Fall back to `~/.soap_calc/inventory.md` (user default)
+   - If neither exists, tell the user they need to create an inventory first
 2. Constrain oil and additive selection to items listed in the inventory.
 3. If the inventory doesn't contain enough variety for a good recipe (e.g., no hard oils, no lather booster), tell the user what's missing and suggest additions.
 4. Follow the normal formulation workflow otherwise (consult reference file → validate → calculate → export).

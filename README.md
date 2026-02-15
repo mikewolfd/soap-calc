@@ -2,6 +2,9 @@
 
 [![PyPI](https://img.shields.io/pypi/v/soap-calc.svg)](https://pypi.org/project/soap-calc/)
 
+> [!CAUTION]
+> **Handle Lye with Care.** Sodium Hydroxide (NaOH) and Potassium Hydroxide (KOH) are caustic chemicals that cause severe burns. Always wear safety goggles and gloves. Verify all calculations before use.
+
 **The first Python-based soap formulation library.** Define recipes in JSON, calculate lye and water amounts, predict soap properties, and export printable instructions—all from the command line or through AI agents like Claude Code.
 
 Traditional web calculators lock your formulas in HTML forms. Soap Calc treats recipes as code: version them with git, iterate programmatically, and collaborate with AI to brainstorm oils, debug formulations, and scale batches. Ask "Create a moisturizing bar soap for dry skin" or "Why is this recipe too soft?" and get structured, chemically sound answers.
@@ -135,9 +138,30 @@ cd soap-calc
 pip install -e .
 ```
 
-## Built-in Claude Code Skill
+## Built-in Claude Code Plugin
 
-This repository includes a soap formulation skill for Claude Code (`.agent/skills/soap-formulation/`). The skill combines expert formulation guidance with the calculation engine to help you design, troubleshoot, and refine recipes through conversation.
+This repository is also a Claude Code plugin with two skills for AI-assisted soap making.
+
+### **Installation**
+
+**Both installations are required:**
+
+```bash
+# 1. Install the Python package first (required for skills to work)
+cd /path/to/soap-calc
+pip install -e .
+
+# 2. Install the Claude Code plugin (registers the skills)
+claude plugin install .
+```
+
+After installation, the skills will be available in any Claude Code session. The skills use the `soap-calc` CLI and Python API, so the Python package must be installed for them to function.
+
+---
+
+### 🧪 **Soap Formulation** (`skills/soap-formulation/`)
+
+Expert formulation guidance combined with the calculation engine to help you design, troubleshoot, and refine recipes through conversation.
 
 **What it does:**
 - Generates recipes from natural language descriptions ("moisturizing bar with shea butter")
@@ -149,7 +173,31 @@ This repository includes a soap formulation skill for Claude Code (`.agent/skill
 **How it works:**
 The skill consults `soap-formulation-expert-reference.md` for fatty acid balance targets and formulation archetypes, searches the oil database to verify ingredient names, writes recipe files, validates them, runs calculations, and exports formatted instructions—all while explaining the chemistry and design choices.
 
-Try: *"Create a conditioning shampoo bar recipe"* or *"Why does my castile soap take forever to harden?"*
+**Try asking:** *"Create a conditioning shampoo bar recipe"* or *"Why does my castile soap take forever to harden?"*
+
+---
+
+### 📦 **Inventory Management** (`skills/inventory/`)
+
+Track your oils, butters, and additives. The skill cross-references your items against the verified database and saves them for use in formulation.
+
+**What it does:**
+- Validates items against the oil and additive databases
+- Resolves ambiguous names (e.g., "coconut oil" → prompts for specific variant)
+- Flags unverified items not in the database
+- Saves your inventory for use in recipe formulation
+
+**Inventory locations (hybrid approach):**
+- **`~/.soap_calc/inventory.md`** — Your global inventory (default, follows you across projects)
+- **`./inventory.md`** — Project-specific inventory (optional, overrides global)
+
+The skill checks the current directory first, then falls back to your global inventory.
+
+**Try saying:** *"I have olive oil, coconut oil, shea butter, and sodium lactate"*
+
+**Using your inventory:** *"Create a recipe using my inventory"* or *"What can I make with what I have?"*
+
+**Note:** The inventory is only used when you explicitly ask. Otherwise, formulations use the full database.
 
 ## Usage
 
@@ -234,3 +282,12 @@ pytest
 - `tests/`: Unit and integration tests.
 - `data/`: Built-in oil database.
 - `examples/`: Example recipe files.
+
+## Disclaimer
+
+**Use at your own risk.** This software is provided "as is" without warranty of any kind. Soap making involves the use of caustic chemicals (sodium hydroxide and potassium hydroxide) which can cause severe burns and injury if mishandled.
+
+- Always wear appropriate safety gear (goggles, gloves, long sleeves).
+- Always verify lye calculations with a second source (e.g., [SoapCalc.net](http://soapcalc.net) or [Soapee](https://soapee.com)).
+- The authors and contributors of this software are not liable for any injuries, damages, or ruined batches resulting from the use of this calculator.
+- Professional advice is recommended for commercial production.

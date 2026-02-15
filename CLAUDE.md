@@ -167,7 +167,7 @@ Markdown Report
 
 **This repository includes a built-in Claude Code skill for soap formulation guidance.**
 
-Location: `.agent/skills/soap-formulation/`
+Location: `skills/soap-formulation/`
 
 The skill provides:
 - Expert formulation advice using the expert reference file (`soap-formulation-expert-reference.md`)
@@ -189,9 +189,15 @@ The skill provides:
 
 ## Inventory Management Skill
 
-Location: `.agent/skills/inventory/`
+Location: `skills/inventory/`
 
-The skill processes user-provided oil and additive lists, cross-references against `data/oils.json` and `data/additives.json`, and saves a validated `inventory.md` at the project root.
+The skill processes user-provided oil and additive lists, cross-references against `data/oils.json` and `data/additives.json`, and saves a validated `inventory.md`.
+
+**Inventory file locations (hybrid approach with priority):**
+1. `./inventory.md` (current directory) — project-specific inventory
+2. `~/.soap_calc/inventory.md` (user home) — global user inventory
+
+The skill checks current directory first, then falls back to user default. When creating new inventory, it asks where to save.
 
 **When to use the skill:**
 - User tells you what oils/additives they have on hand

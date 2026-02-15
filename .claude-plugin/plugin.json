@@ -1,0 +1,20 @@
+{
+  "name": "soap-calc",
+  "version": "0.1.2",
+  "description": "Soap formulation and inventory management skills for soap makers using the soap-calc library",
+  "author": {
+    "name": "Michael Deeb",
+    "email": "michael.f.deeb@gmail.com"
+  },
+  "homepage": "https://github.com/mikewolfd/soap-calc",
+  "repository": "https://github.com/mikewolfd/soap-calc",
+  "license": "MIT",
+  "keywords": [
+    "soap",
+    "formulation",
+    "saponification",
+    "recipe",
+    "lye-calculator",
+    "chemistry"
+  ]
+}
