@@ -36,7 +36,6 @@ from soap_calc import (
 )
 from soap_calc.fragrance import calculate_fragrance, get_eo_max_rate
 from soap_calc.validation import validate
-from soap_calc.oils import OLIVE_OIL, COCONUT_OIL_76, SHEA_BUTTER
 from soap_calc.export import render_markdown
 
 
@@ -72,20 +71,20 @@ class TestOilDatabase:
 # ---------------------------------------------------------------------------
 
 class TestRecipeIO:
-    def _sample_recipe(self):
+    def _sample_recipe(self, olive, coconut):
         return Recipe(
             name="Test Save",
             oils=[
-                OilEntry(oil=OLIVE_OIL, percentage=70.0),
-                OilEntry(oil=COCONUT_OIL_76, percentage=30.0),
+                OilEntry(oil=olive, percentage=70.0),
+                OilEntry(oil=coconut, percentage=30.0),
             ],
             lye_type=LyeType.NAOH,
             superfat_pct=5.0,
             total_oil_weight=500.0,
         )
 
-    def test_json_roundtrip(self, tmp_path):
-        r = self._sample_recipe()
+    def test_json_roundtrip(self, tmp_path, olive_oil, coconut_oil_76):
+        r = self._sample_recipe(olive_oil, coconut_oil_76)
         path = tmp_path / "recipe.json"
         save_recipe(r, path)
         loaded = load_recipe(path)
@@ -95,16 +94,16 @@ class TestRecipeIO:
         assert loaded.oils[0].percentage == 70.0
         assert loaded.total_oil_weight == 500.0
 
-    def test_yaml_roundtrip(self, tmp_path):
-        r = self._sample_recipe()
+    def test_yaml_roundtrip(self, tmp_path, olive_oil, coconut_oil_76):
+        r = self._sample_recipe(olive_oil, coconut_oil_76)
         path = tmp_path / "recipe.yaml"
         save_recipe(r, path)
         loaded = load_recipe(path)
         assert loaded.name == r.name
         assert loaded.oils[1].percentage == 30.0
 
-    def test_mold_roundtrip(self, tmp_path):
-        r = self._sample_recipe()
+    def test_mold_roundtrip(self, tmp_path, olive_oil, coconut_oil_76):
+        r = self._sample_recipe(olive_oil, coconut_oil_76)
         r.mold = MoldSpec(length=25, width=8, height=7)
         path = tmp_path / "recipe.json"
         save_recipe(r, path)
@@ -112,17 +111,17 @@ class TestRecipeIO:
         assert loaded.mold is not None
         assert loaded.mold.length == 25
 
-    def test_ignore_warnings_io(self, tmp_path):
-        r = self._sample_recipe()
+    def test_ignore_warnings_io(self, tmp_path, olive_oil, coconut_oil_76):
+        r = self._sample_recipe(olive_oil, coconut_oil_76)
         r.ignore_warnings = ["foo", "bar"]
         path = tmp_path / "ignores.json"
         save_recipe(r, path)
         loaded = load_recipe(path)
         assert loaded.ignore_warnings == ["foo", "bar"]
 
-    def test_superfat_oils_io(self, tmp_path):
-        r = self._sample_recipe()
-        r.superfat_oils = [OilEntry(oil=SHEA_BUTTER, percentage=5.0)]
+    def test_superfat_oils_io(self, tmp_path, olive_oil, coconut_oil_76, shea_butter):
+        r = self._sample_recipe(olive_oil, coconut_oil_76)
+        r.superfat_oils = [OilEntry(oil=shea_butter, percentage=5.0)]
         path = tmp_path / "sf_oils.json"
         save_recipe(r, path)
         loaded = load_recipe(path)
@@ -136,12 +135,12 @@ class TestRecipeIO:
 # ---------------------------------------------------------------------------
 
 class TestScaling:
-    def test_scale_changes_oil_weight(self):
+    def test_scale_changes_oil_weight(self, olive_oil, coconut_oil_76):
         r = Recipe(
             name="Scale Test",
             oils=[
-                OilEntry(oil=OLIVE_OIL, percentage=60.0),
-                OilEntry(oil=COCONUT_OIL_76, percentage=40.0),
+                OilEntry(oil=olive_oil, percentage=60.0),
+                OilEntry(oil=coconut_oil_76, percentage=40.0),
             ],
             total_oil_weight=800.0,
         )
@@ -151,10 +150,10 @@ class TestScaling:
         assert scaled.oils[0].percentage == 60.0
         assert scaled.oils[1].percentage == 40.0
 
-    def test_scale_absolute_additive(self):
+    def test_scale_absolute_additive(self, olive_oil):
         r = Recipe(
             name="Scale Test",
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
             total_oil_weight=1000.0,
             additives=[Additive(name="Sugar", amount=20.0)],
         )
@@ -201,51 +200,51 @@ class TestValidation:
         warnings = validate(r)
         assert any("no oils" in w.lower() for w in warnings)
 
-    def test_high_superfat_warning(self):
+    def test_high_superfat_warning(self, olive_oil):
         r = Recipe(
             name="High SF",
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
             superfat_pct=25.0,
         )
         warnings = validate(r)
         assert any("superfat" in w.lower() for w in warnings)
 
-    def test_high_coconut_warning(self):
+    def test_high_coconut_warning(self, olive_oil, coconut_oil_76):
         r = Recipe(
             name="Coconut Heavy",
             oils=[
-                OilEntry(oil=COCONUT_OIL_76, percentage=70.0),
-                OilEntry(oil=OLIVE_OIL, percentage=30.0),
+                OilEntry(oil=coconut_oil_76, percentage=70.0),
+                OilEntry(oil=olive_oil, percentage=30.0),
             ],
             superfat_pct=5.0,
         )
         warnings = validate(r)
         assert any("drying" in w.lower() for w in warnings)
 
-    def test_oil_percentages_not_100(self):
+    def test_oil_percentages_not_100(self, olive_oil, coconut_oil_76):
         r = Recipe(
             name="Bad pct",
             oils=[
-                OilEntry(oil=OLIVE_OIL, percentage=50.0),
-                OilEntry(oil=COCONUT_OIL_76, percentage=30.0),
+                OilEntry(oil=olive_oil, percentage=50.0),
+                OilEntry(oil=coconut_oil_76, percentage=30.0),
             ],
         )
         warnings = validate(r)
         assert any("80" in w for w in warnings)  # sums to 80%
 
-    def test_water_ratio_warning(self):
+    def test_water_ratio_warning(self, olive_oil):
         """Test warning for unsafe water:lye ratio."""
         r = Recipe(
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
             water_mode=WaterCalculationMode.WATER_LYE_RATIO,
             water_value=0.5  # unsafe
         )
         warnings = validate(r)
         assert any("dangerously low" in w for w in warnings)
 
-    def test_high_superfat_warning_split_mode(self):
+    def test_high_superfat_warning_split_mode(self, olive_oil):
         r = Recipe(
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
             superfat_pct=25.0,
             # To test split logic warning, we can add SF oils, or just rely on standard mode warning
             # The warning logic for >20% is shared.
@@ -253,11 +252,11 @@ class TestValidation:
         warnings = validate(r)
         assert any("unusually high" in w for w in warnings)
 
-    def test_superfat_oils_sum_warning(self):
+    def test_superfat_oils_sum_warning(self, olive_oil, shea_butter):
         """Test that superfat oils must sum to 100%."""
         r = Recipe(
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
-            superfat_oils=[OilEntry(oil=SHEA_BUTTER, percentage=50.0)], # Only 50%
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
+            superfat_oils=[OilEntry(oil=shea_butter, percentage=50.0)], # Only 50%
             superfat_pct=5.0
         )
         warnings = validate(r)
@@ -304,10 +303,10 @@ class TestMold:
         mold = mold_from_inches(10, 3.5, 3)
         assert mold.length > 20
 
-    def test_mold_spec_in_recipe(self):
+    def test_mold_spec_in_recipe(self, olive_oil):
         """MoldSpec embedded in recipe drives oil weight."""
         r = Recipe(
-            oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+            oils=[OilEntry(oil=olive_oil, percentage=100.0)],
             mold=MoldSpec(length=25, width=8, height=7),
         )
         result = calculate(r, run_validation=False)
@@ -321,12 +320,12 @@ class TestMold:
 # ---------------------------------------------------------------------------
 
 class TestExport:
-    def test_render_markdown(self):
+    def test_render_markdown(self, olive_oil, coconut_oil_76):
         r = Recipe(
             name="Export Test",
             oils=[
-                OilEntry(oil=OLIVE_OIL, percentage=70.0),
-                OilEntry(oil=COCONUT_OIL_76, percentage=30.0),
+                OilEntry(oil=olive_oil, percentage=70.0),
+                OilEntry(oil=coconut_oil_76, percentage=30.0),
             ],
             total_oil_weight=500.0,
         )

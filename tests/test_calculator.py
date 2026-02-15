@@ -11,14 +11,12 @@ from soap_calc import (
     calculate,
     WaterCalculationMode,
 )
-from soap_calc.oils import OLIVE_OIL, COCONUT_OIL_76, SHEA_BUTTER
-
 
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
 
-def _basic_recipe(**overrides) -> Recipe:
+def _basic_recipe(olive, coconut, shea, **overrides) -> Recipe:
     """Create a simple 3-oil recipe with sensible defaults.
 
     Oils: 62.5% olive, 25% coconut, 12.5% shea (same as beginner example).
@@ -27,9 +25,9 @@ def _basic_recipe(**overrides) -> Recipe:
     kwargs = dict(
         name="Test Recipe",
         oils=[
-            OilEntry(oil=OLIVE_OIL, percentage=62.5),
-            OilEntry(oil=COCONUT_OIL_76, percentage=25.0),
-            OilEntry(oil=SHEA_BUTTER, percentage=12.5),
+            OilEntry(oil=olive, percentage=62.5),
+            OilEntry(oil=coconut, percentage=25.0),
+            OilEntry(oil=shea, percentage=12.5),
         ],
         lye_type=LyeType.NAOH,
         superfat_pct=5.0,
@@ -46,8 +44,8 @@ def _basic_recipe(**overrides) -> Recipe:
 # ---------------------------------------------------------------------------
 
 class TestLyeCalculation:
-    def test_naoh_basic(self):
-        recipe = _basic_recipe()
+    def test_naoh_basic(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter)
         result = calculate(recipe, run_validation=False)
         # 800g oils: olive 500g, coconut 200g, shea 100g
         # (500*0.135 + 200*0.183 + 100*0.128) * 0.95
@@ -55,35 +53,35 @@ class TestLyeCalculation:
         assert abs(result.lye.naoh_amount - round(expected_naoh, 2)) < 0.055
         assert result.lye.koh_amount == 0.0
 
-    def test_koh_basic(self):
-        recipe = _basic_recipe(lye_type=LyeType.KOH)
+    def test_koh_basic(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, lye_type=LyeType.KOH)
         result = calculate(recipe, run_validation=False)
         # Default KOH purity is 90%, so divide by 0.9
         expected_koh = ((500 * 0.190 + 200 * 0.257 + 100 * 0.179) * 0.95) / 0.90
         assert abs(result.lye.koh_amount - round(expected_koh, 2)) < 0.055
         assert result.lye.naoh_amount == 0.0
 
-    def test_dual_lye(self):
-        recipe = _basic_recipe(lye_type=LyeType.DUAL, naoh_ratio=50.0)
+    def test_dual_lye(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, lye_type=LyeType.DUAL, naoh_ratio=50.0)
         result = calculate(recipe, run_validation=False)
         assert result.lye.naoh_amount > 0
         assert result.lye.koh_amount > 0
 
-    def test_superfat_zero(self):
-        recipe = _basic_recipe(superfat_pct=0.0)
+    def test_superfat_zero(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, superfat_pct=0.0)
         result = calculate(recipe, run_validation=False)
         expected = 500 * 0.135 + 200 * 0.183 + 100 * 0.128
         assert abs(result.lye.naoh_amount - round(expected, 2)) < 0.055
 
-    def test_superfat_high(self):
-        recipe = _basic_recipe(superfat_pct=20.0)
+    def test_superfat_high(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, superfat_pct=20.0)
         result = calculate(recipe, run_validation=False)
         expected = (500 * 0.135 + 200 * 0.183 + 100 * 0.128) * 0.80
         assert abs(result.lye.naoh_amount - round(expected, 2)) < 0.055
 
-    def test_oil_weight_override(self):
+    def test_oil_weight_override(self, olive_oil, coconut_oil_76, shea_butter):
         """Passing oil_weight to calculate() overrides default."""
-        recipe = _basic_recipe(total_oil_weight=800.0)
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, total_oil_weight=800.0)
         result_default = calculate(recipe, run_validation=False)
         result_override = calculate(recipe, oil_weight=400.0, run_validation=False)
         # Half the oil → half the lye
@@ -95,8 +93,9 @@ class TestLyeCalculation:
 # ---------------------------------------------------------------------------
 
 class TestLiquidCalculation:
-    def test_water_lye_ratio(self):
+    def test_water_lye_ratio(self, olive_oil, coconut_oil_76, shea_butter):
         recipe = _basic_recipe(
+            olive_oil, coconut_oil_76, shea_butter,
             water_mode=WaterCalculationMode.WATER_LYE_RATIO,
             water_value=2.0
         )
@@ -104,9 +103,10 @@ class TestLiquidCalculation:
         expected_liquid = result.lye.naoh_amount * 2.0
         assert abs(result.total_liquid - expected_liquid) < 0.02
 
-    def test_lye_concentration(self):
+    def test_lye_concentration(self, olive_oil, coconut_oil_76, shea_butter):
         # 33.33% lye concentration => water:lye is 2:1
         recipe = _basic_recipe(
+            olive_oil, coconut_oil_76, shea_butter,
             water_mode=WaterCalculationMode.LYE_CONCENTRATION,
             water_value=33.33333333
         )
@@ -114,8 +114,9 @@ class TestLiquidCalculation:
         expected_liquid = result.lye.naoh_amount * 2.0
         assert abs(result.total_liquid - expected_liquid) < 0.1
 
-    def test_water_percent_of_oils(self):
+    def test_water_percent_of_oils(self, olive_oil, coconut_oil_76, shea_butter):
         recipe = _basic_recipe(
+            olive_oil, coconut_oil_76, shea_butter,
             water_mode=WaterCalculationMode.WATER_PERCENT_OF_OILS,
             water_value=38.0,
             total_oil_weight=1000.0
@@ -123,8 +124,9 @@ class TestLiquidCalculation:
         result = calculate(recipe, run_validation=False)
         assert abs(result.total_liquid - 380.0) < 0.02
 
-    def test_liquid_discount(self):
+    def test_liquid_discount(self, olive_oil, coconut_oil_76, shea_butter):
         recipe = _basic_recipe(
+            olive_oil, coconut_oil_76, shea_butter,
             water_mode=WaterCalculationMode.WATER_LYE_RATIO,
             water_value=2.0,
             liquid_discount_pct=10.0
@@ -140,10 +142,11 @@ class TestLiquidCalculation:
 # ---------------------------------------------------------------------------
 
 class TestValidationFiltering:
-    def test_ignore_warnings(self):
+    def test_ignore_warnings(self, olive_oil, coconut_oil_76, shea_butter):
         # Create a recipe that triggers warnings
         r = _basic_recipe(
-            oils=[OilEntry(oil=COCONUT_OIL_76, percentage=100.0)],
+            olive_oil, coconut_oil_76, shea_butter,
+            oils=[OilEntry(oil=coconut_oil_76, percentage=100.0)],
             superfat_pct=0.0  # triggers "Superfat is 0 %" + drying warning
         )
         # Without ignore
@@ -163,8 +166,8 @@ class TestValidationFiltering:
 # ---------------------------------------------------------------------------
 
 class TestBatchWeight:
-    def test_total_includes_everything(self):
-        recipe = _basic_recipe()
+    def test_total_includes_everything(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter)
         result = calculate(recipe, run_validation=False)
         expected = 800 + result.lye.naoh_amount + result.total_liquid
         assert abs(result.total_batch_weight - expected) < 0.1
@@ -175,15 +178,15 @@ class TestBatchWeight:
 # ---------------------------------------------------------------------------
 
 class TestProperties:
-    def test_properties_populated(self):
-        recipe = _basic_recipe()
+    def test_properties_populated(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter)
         result = calculate(recipe, run_validation=False)
         assert result.properties.hardness.value > 0
         assert result.properties.cleansing.value > 0
         assert result.properties.conditioning.value > 0
 
-    def test_fatty_acid_profile(self):
-        recipe = _basic_recipe()
+    def test_fatty_acid_profile(self, olive_oil, coconut_oil_76, shea_butter):
+        recipe = _basic_recipe(olive_oil, coconut_oil_76, shea_butter)
         result = calculate(recipe, run_validation=False)
         fa = result.fatty_acid_profile
         assert fa.oleic > 30  # olive-heavy
@@ -195,16 +198,16 @@ class TestProperties:
 # ---------------------------------------------------------------------------
 
 class TestSuperfatOils:
-    def test_superfat_oils_split_mode(self):
+    def test_superfat_oils_split_mode(self, olive_oil, coconut_oil_76, shea_butter):
         """Test that superfat oils splitting total batch weight correctly."""
         # 1000g Total Oil. 10% Superfat.
         # Expect: 900g Base, 100g Superfat.
-        r = _basic_recipe(total_oil_weight=1000.0, superfat_pct=10.0)
+        r = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, total_oil_weight=1000.0, superfat_pct=10.0)
         
         # Base: Olive 100%
         # Superfat: Shea 100%
-        r.oils = [OilEntry(oil=OLIVE_OIL, percentage=100.0)]
-        r.superfat_oils = [OilEntry(oil=SHEA_BUTTER, percentage=100.0)]
+        r.oils = [OilEntry(oil=olive_oil, percentage=100.0)]
+        r.superfat_oils = [OilEntry(oil=shea_butter, percentage=100.0)]
         
         result = calculate(r, run_validation=False)
         
@@ -224,10 +227,10 @@ class TestSuperfatOils:
         # Lye = 900 * 0.135 = 121.5 g.
         assert abs(result.lye.naoh_amount - 121.5) < 0.1
 
-    def test_effective_superfat_matches_target(self):
+    def test_effective_superfat_matches_target(self, olive_oil, coconut_oil_76, shea_butter):
         """Effective superfat should ideally match the target in split mode."""
-        r = _basic_recipe(superfat_pct=5.0, total_oil_weight=100.0)
-        r.superfat_oils = [OilEntry(oil=SHEA_BUTTER, percentage=100.0)]
+        r = _basic_recipe(olive_oil, coconut_oil_76, shea_butter, superfat_pct=5.0, total_oil_weight=100.0)
+        r.superfat_oils = [OilEntry(oil=shea_butter, percentage=100.0)]
         
         result = calculate(r, run_validation=False)
         

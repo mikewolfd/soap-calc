@@ -5,13 +5,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from soap_calc import cli
 from soap_calc.models import Recipe, OilEntry, LyeResult, RecipeResult, FattyAcidProfile, SoapProperties
-from soap_calc.oils import OLIVE_OIL
 
 @pytest.fixture
-def mock_recipe():
+def mock_recipe(olive_oil):
     return Recipe(
         name="Test Recipe",
-        oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
+        oils=[OilEntry(oil=olive_oil, percentage=100.0)],
         total_oil_weight=500.0,
     )
 
@@ -104,8 +103,8 @@ class TestCliCommands:
 
     @patch("soap_calc.cli.list_oils")
     @patch("soap_calc.cli.search_oils")
-    def test_cmd_list_oils(self, mock_search, mock_list):
-        mock_list.return_value = [OLIVE_OIL]
+    def test_cmd_list_oils(self, mock_search, mock_list, olive_oil):
+        mock_list.return_value = [olive_oil]
         
         # No query
         args = argparse.Namespace(query=None)
@@ -116,7 +115,7 @@ class TestCliCommands:
 
         # With query
         args = argparse.Namespace(query="olive")
-        mock_search.return_value = [OLIVE_OIL]
+        mock_search.return_value = [olive_oil]
         with patch("sys.stdout"):
             cli._cmd_list_oils(args)
         mock_search.assert_called_with("olive")
