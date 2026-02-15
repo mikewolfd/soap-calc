@@ -73,16 +73,29 @@ def calculate(
     # 2. Determine Split (Base vs Superfat Phase)
     has_superfat_oils = len(recipe.superfat_oils) > 0
     
+    # Check if base_oil_weight drives the sizing (no override, no mold)
+    _core_mode = (
+        oil_weight is None
+        and recipe.mold is None
+        and recipe.base_oil_weight is not None
+        and has_superfat_oils
+    )
+    
     if has_superfat_oils:
-        # Split-Phase Logic
-        # superfat_pct is the % of total oils that is the Superfat Phase
-        sf_ratio = recipe.superfat_pct / 100.0
-        # Cap to avoid errors if 100%
-        if sf_ratio >= 1.0:
-            sf_ratio = 0.99
-            
-        weight_superfat_phase = round(total_batch_oil_weight * sf_ratio, 2)
-        weight_base_phase = total_batch_oil_weight - weight_superfat_phase
+        if _core_mode:
+            # Core-mode: base = core directly, superfat added on top
+            weight_base_phase = float(recipe.base_oil_weight)  # type: ignore[arg-type]
+            weight_superfat_phase = round(
+                weight_base_phase * recipe.superfat_pct / 100.0, 2
+            )
+            total_batch_oil_weight = weight_base_phase + weight_superfat_phase
+        else:
+            # Total-mode: split total by superfat_pct
+            sf_ratio = recipe.superfat_pct / 100.0
+            if sf_ratio >= 1.0:
+                sf_ratio = 0.99
+            weight_superfat_phase = round(total_batch_oil_weight * sf_ratio, 2)
+            weight_base_phase = total_batch_oil_weight - weight_superfat_phase
         
         # Base is fully saponified (0% discount)
         base_lye_discount = 0.0

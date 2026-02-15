@@ -13,6 +13,10 @@
             "type": "string",
             "description": "Recipe name."
         },
+        "description": {
+            "type": "string",
+            "description": "User-facing description of the recipe purpose and characteristics."
+        },
         "lye_type": {
             "type": "string",
             "enum": [
@@ -59,11 +63,15 @@
             "default": 0.0,
             "description": "Additional liquid discount percentage (applied after calculation)."
         },
-        "default_oil_weight": {
+        "total_oil_weight": {
             "type": "number",
             "minimum": 0,
-            "default": 800.0,
-            "description": "Default total oil weight in grams if no mold specified."
+            "description": "Total oil weight in grams (base + superfat). Mutually exclusive with base_oil_weight."
+        },
+        "base_oil_weight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Base oil weight in grams (excludes superfat). Total oil weight is calculated from this. Mutually exclusive with total_oil_weight."
         },
         "ignore_warnings": {
             "type": "array",

@@ -81,7 +81,7 @@ class TestRecipeIO:
             ],
             lye_type=LyeType.NAOH,
             superfat_pct=5.0,
-            default_oil_weight=500.0,
+            total_oil_weight=500.0,
         )
 
     def test_json_roundtrip(self, tmp_path):
@@ -93,7 +93,7 @@ class TestRecipeIO:
         assert len(loaded.oils) == 2
         assert loaded.oils[0].oil.name == "Olive Oil"
         assert loaded.oils[0].percentage == 70.0
-        assert loaded.default_oil_weight == 500.0
+        assert loaded.total_oil_weight == 500.0
 
     def test_yaml_roundtrip(self, tmp_path):
         r = self._sample_recipe()
@@ -143,10 +143,10 @@ class TestScaling:
                 OilEntry(oil=OLIVE_OIL, percentage=60.0),
                 OilEntry(oil=COCONUT_OIL_76, percentage=40.0),
             ],
-            default_oil_weight=800.0,
+            total_oil_weight=800.0,
         )
         scaled = scale_recipe(r, 400.0)
-        assert scaled.default_oil_weight == 400.0
+        assert scaled.total_oil_weight == 400.0
         # Percentages are unchanged
         assert scaled.oils[0].percentage == 60.0
         assert scaled.oils[1].percentage == 40.0
@@ -155,7 +155,7 @@ class TestScaling:
         r = Recipe(
             name="Scale Test",
             oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
-            default_oil_weight=1000.0,
+            total_oil_weight=1000.0,
             additives=[Additive(name="Sugar", amount=20.0)],
         )
         scaled = scale_recipe(r, 500.0)
@@ -169,13 +169,13 @@ class TestScaling:
 
 class TestResolveOilWeight:
     def test_default(self):
-        r = Recipe(oils=[], default_oil_weight=800.0)
+        r = Recipe(oils=[], total_oil_weight=800.0)
         assert r.resolve_oil_weight() == 800.0
 
     def test_mold_overrides_default(self):
         r = Recipe(
             oils=[],
-            default_oil_weight=800.0,
+            total_oil_weight=800.0,
             mold=MoldSpec(length=25, width=8, height=7),
         )
         weight = r.resolve_oil_weight()
@@ -185,7 +185,7 @@ class TestResolveOilWeight:
     def test_override_beats_mold(self):
         r = Recipe(
             oils=[],
-            default_oil_weight=800.0,
+            total_oil_weight=800.0,
             mold=MoldSpec(length=25, width=8, height=7),
         )
         assert r.resolve_oil_weight(override=1234.0) == 1234.0
@@ -328,7 +328,7 @@ class TestExport:
                 OilEntry(oil=OLIVE_OIL, percentage=70.0),
                 OilEntry(oil=COCONUT_OIL_76, percentage=30.0),
             ],
-            default_oil_weight=500.0,
+            total_oil_weight=500.0,
         )
         result = calculate(r)
         md = render_markdown(r, result)
@@ -350,7 +350,7 @@ class TestEndToEnd:
             pytest.skip("Example recipe not found")
         recipe = load_recipe(example)
         assert recipe.oils[0].percentage == 62.5
-        assert recipe.default_oil_weight == 800
+        assert recipe.total_oil_weight == 800
         # Check new water fields are loaded
         assert recipe.water_value == 2.0
         

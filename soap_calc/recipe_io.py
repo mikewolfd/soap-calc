@@ -99,14 +99,22 @@ def recipe_to_dict(recipe: Recipe) -> Dict[str, Any]:
         "liquids": [_liquid_to_dict(liq) for liq in recipe.liquids],
         "additives": [_additive_to_dict(a) for a in recipe.additives],
         "fragrances": [_fragrance_to_dict(frag) for frag in recipe.fragrances],
-        "default_oil_weight": recipe.default_oil_weight,
     }
+    if recipe.total_oil_weight is not None:
+        d["total_oil_weight"] = recipe.total_oil_weight
+    if recipe.base_oil_weight is not None:
+        d["base_oil_weight"] = recipe.base_oil_weight
+    # If neither was explicitly set, emit total_oil_weight for explicitness
+    if recipe.total_oil_weight is None and recipe.base_oil_weight is None:
+        d["total_oil_weight"] = recipe.resolve_oil_weight()
     if recipe.superfat_oils:
         d["superfat_oils"] = [_oil_entry_to_dict(e) for e in recipe.superfat_oils]
     if recipe.mold is not None:
         d["mold"] = _mold_to_dict(recipe.mold)
     if recipe.ignore_warnings:
         d["ignore_warnings"] = recipe.ignore_warnings
+    if recipe.description:
+        d["description"] = recipe.description
     if recipe.notes:
         d["notes"] = recipe.notes
     return d
@@ -176,6 +184,7 @@ def dict_to_recipe(data: Dict[str, Any]) -> Recipe:
 
     return Recipe(
         name=data.get("name", "Untitled Recipe"),
+        description=data.get("description", ""),
         lye_type=LyeType(data.get("lye_type", LyeType.NAOH.value)),
         naoh_ratio=data.get("naoh_ratio", 100.0),
         naoh_purity=data.get("naoh_purity", 100.0),
@@ -189,7 +198,8 @@ def dict_to_recipe(data: Dict[str, Any]) -> Recipe:
         additives=[_parse_additive(a) for a in data.get("additives", [])],
         fragrances=[_parse_fragrance(f) for f in data.get("fragrances", [])],
         superfat_oils=[_parse_oil_entry(o) for o in data.get("superfat_oils", [])],
-        default_oil_weight=data.get("default_oil_weight", 800.0),
+        total_oil_weight=data.get("total_oil_weight"),
+        base_oil_weight=data.get("base_oil_weight"),
         mold=_parse_mold(mold_data) if mold_data else None,
         ignore_warnings=data.get("ignore_warnings", []),
         notes=data.get("notes", ""),
@@ -241,17 +251,22 @@ def load_recipe(path: Union[str, Path]) -> Recipe:
 
 
 def scale_recipe(recipe: Recipe, target_oil_weight: float) -> Recipe:
-    """Return a new recipe with *default_oil_weight* set to *target_oil_weight*.
+    """Return a new recipe scaled to *target_oil_weight* (total oils).
 
     Because oils are stored as percentages the ratios stay the same —
     only the batch size changes.  Additive *amounts* (absolute grams)
     are scaled proportionally; percentage-based additives scale
     automatically.
     """
-    factor = target_oil_weight / recipe.default_oil_weight if recipe.default_oil_weight > 0 else 1.0
+    current = recipe.resolve_oil_weight()
+    factor = target_oil_weight / current if current > 0 else 1.0
     new = copy.deepcopy(recipe)
-    new.default_oil_weight = target_oil_weight
+
+    # Set total explicitly and clear core / mold so they don't conflict
+    new.total_oil_weight = target_oil_weight
+    new.base_oil_weight = None
     new.mold = None  # Clear mold so it doesn't override the scaled weight
+
     for add in new.additives:
         if add.amount is not None:
             add.amount = round(add.amount * factor, 2)

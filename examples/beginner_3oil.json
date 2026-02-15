@@ -4,7 +4,7 @@
     "superfat_pct": 5.0,
     "water_mode": "Water:Lye Ratio",
     "water_value": 2.0,
-    "default_oil_weight": 800,
+    "total_oil_weight": 800,
     "oils": [
         {
             "oil": "Olive Oil",

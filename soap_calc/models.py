@@ -205,6 +205,7 @@ OIL_DENSITY_G_PER_CM3 = 0.692
 @dataclass
 class Recipe:
     name: str = "Untitled Recipe"
+    description: str = ""
     lye_type: LyeType = LyeType.NAOH
     naoh_ratio: float = 100.0  # e.g., 90% NaOH, 10% KOH
     naoh_purity: float = 100.0
@@ -218,18 +219,38 @@ class Recipe:
     additives: List[Additive] = field(default_factory=list)
     fragrances: List[Fragrance] = field(default_factory=list)
     superfat_oils: List[OilEntry] = field(default_factory=list)  # If present, these define the Superfat Phase
-    default_oil_weight: float = 800.0  # grams — used when no override
+    total_oil_weight: Optional[float] = None  # grams — total batch oils (base + superfat)
+    base_oil_weight: Optional[float] = None   # grams — base oils only (excludes superfat)
     mold: Optional[MoldSpec] = None
     ignore_warnings: List[str] = field(default_factory=list)
     notes: str = ""
 
     def resolve_oil_weight(self, override: Optional[float] = None) -> float:
-        """Determine total oil weight from override, mold, or default."""
+        """Determine total oil weight from override, mold, base_oil_weight, or total_oil_weight.
+
+        Priority:
+            1. Explicit *override* argument (e.g. from CLI ``--oil-weight``)
+            2. Mold specification
+            3. ``base_oil_weight`` — back-calculates total using superfat_pct
+            4. ``total_oil_weight``
+            5. Fallback: 800 g
+        """
         if override is not None:
             return float(override)
         if self.mold is not None:
             return round(self.mold.estimated_oil_weight, 2)
-        return self.default_oil_weight
+        if self.base_oil_weight is not None:
+            base = float(self.base_oil_weight)
+            if len(self.superfat_oils) > 0:
+                # Base + superfat on top: total = base + base * sf%/100
+                sf_extra = base * self.superfat_pct / 100.0
+                return round(base + sf_extra, 2)
+            else:
+                # Standard (no superfat oils): core IS the total
+                return base
+        if self.total_oil_weight is not None:
+            return float(self.total_oil_weight)
+        return 800.0  # fallback default
 
 
 # ---------------------------------------------------------------------------

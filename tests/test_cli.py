@@ -12,7 +12,7 @@ def mock_recipe():
     return Recipe(
         name="Test Recipe",
         oils=[OilEntry(oil=OLIVE_OIL, percentage=100.0)],
-        default_oil_weight=500.0,
+        total_oil_weight=500.0,
     )
 
 @pytest.fixture

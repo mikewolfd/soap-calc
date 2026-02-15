@@ -35,7 +35,7 @@ def _basic_recipe(**overrides) -> Recipe:
         superfat_pct=5.0,
         water_mode=WaterCalculationMode.WATER_LYE_RATIO,
         water_value=2.0,
-        default_oil_weight=800.0,
+        total_oil_weight=800.0,
     )
     kwargs.update(overrides)
     return Recipe(**kwargs)
@@ -83,7 +83,7 @@ class TestLyeCalculation:
 
     def test_oil_weight_override(self):
         """Passing oil_weight to calculate() overrides default."""
-        recipe = _basic_recipe(default_oil_weight=800.0)
+        recipe = _basic_recipe(total_oil_weight=800.0)
         result_default = calculate(recipe, run_validation=False)
         result_override = calculate(recipe, oil_weight=400.0, run_validation=False)
         # Half the oil → half the lye
@@ -118,7 +118,7 @@ class TestLiquidCalculation:
         recipe = _basic_recipe(
             water_mode=WaterCalculationMode.WATER_PERCENT_OF_OILS,
             water_value=38.0,
-            default_oil_weight=1000.0
+            total_oil_weight=1000.0
         )
         result = calculate(recipe, run_validation=False)
         assert abs(result.total_liquid - 380.0) < 0.02
@@ -199,7 +199,7 @@ class TestSuperfatOils:
         """Test that superfat oils splitting total batch weight correctly."""
         # 1000g Total Oil. 10% Superfat.
         # Expect: 900g Base, 100g Superfat.
-        r = _basic_recipe(default_oil_weight=1000.0, superfat_pct=10.0)
+        r = _basic_recipe(total_oil_weight=1000.0, superfat_pct=10.0)
         
         # Base: Olive 100%
         # Superfat: Shea 100%
@@ -226,7 +226,7 @@ class TestSuperfatOils:
 
     def test_effective_superfat_matches_target(self):
         """Effective superfat should ideally match the target in split mode."""
-        r = _basic_recipe(superfat_pct=5.0, default_oil_weight=100.0)
+        r = _basic_recipe(superfat_pct=5.0, total_oil_weight=100.0)
         r.superfat_oils = [OilEntry(oil=SHEA_BUTTER, percentage=100.0)]
         
         result = calculate(r, run_validation=False)
