@@ -187,6 +187,23 @@ The skill provides:
 - Use `soap-calc list-oils` to verify oil names match database before writing recipes
 - Include safety notes in all formulation output
 
+## Inventory Management Skill
+
+Location: `.agent/skills/inventory/`
+
+The skill processes user-provided oil and additive lists, cross-references against `data/oils.json` and `data/additives.json`, and saves a validated `inventory.md` at the project root.
+
+**When to use the skill:**
+- User tells you what oils/additives they have on hand
+- User asks to add/remove/show/clear their inventory
+
+**Key behavior:**
+- Resolves user input to exact database names (safety-critical for SAP values)
+- Asks for clarification on ambiguous matches (e.g., "coconut oil" → which variant?)
+- Flags items not found in either database as unverified
+- Other skills only use `inventory.md` when the user **explicitly** asks (e.g., "use my inventory")
+
+
 ## JSON Schemas
 
 Schemas are in `schemas/` directory:

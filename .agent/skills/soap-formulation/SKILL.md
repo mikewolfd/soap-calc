@@ -156,6 +156,24 @@ Always include safety notes when generating recipes or process instructions:
 
 **"Review my recipe"** → Run `soap-calc validate` and `soap-calc calculate` on the recipe file. Check fatty acid balance against the targets in the reference file. Flag if cleansing is too high (>20% lauric+myristic without high superfat), if polyunsaturates are risky (>15% linoleic+linolenic without chelator), or if the bar will be too soft or too hard.
 
+## Inventory-Aware Formulation
+
+The project includes an **Inventory Management** skill (`.agent/skills/inventory/SKILL.md`) that saves a validated `inventory.md` file listing the user's available oils and additives.
+
+**Only use the inventory when the user explicitly asks.** Look for phrases like:
+- "use my inventory" / "from what I have"
+- "make a recipe with my oils"
+- "formulate using my supplies"
+
+When inventory is requested:
+1. Read `inventory.md` from the project root.
+2. Constrain oil and additive selection to items listed in the inventory.
+3. If the inventory doesn't contain enough variety for a good recipe (e.g., no hard oils, no lather booster), tell the user what's missing and suggest additions.
+4. Follow the normal formulation workflow otherwise (consult reference file → validate → calculate → export).
+
+**If the user does NOT mention their inventory, ignore `inventory.md` entirely and formulate from the full database as usual.**
+
+
 ## What This Skill Does NOT Cover
 - Cosmetic regulatory compliance (FDA, EU cosmetics regulation)
 - Melt-and-pour soap (different process entirely — no lye handling)
