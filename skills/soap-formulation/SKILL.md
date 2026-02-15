@@ -21,7 +21,7 @@ This project contains a full-featured soap calculator at `/Users/mikewolfd/Work/
 - **Oil database**: `data/oils.json` — built-in library of common oils with SAP values and fatty acid profiles
 - **Additive database**: `data/additives.json` — common soap additives with usage rates and notes
 - **Example recipes**: `examples/` — reference recipe files
-- **JSON Schemas**: `schemas/` — validation schemas for recipes (`recipe.schema.json`), results (`recipe_result.schema.json`), oils (`oils.schema.json`), and additives (`additives.schema.json`)
+- **JSON Schemas**: `schemas/` — validation schemas for recipes (`recipe.schema.json`), oils (`oils.schema.json`), and additives (`additives.schema.json`)
 - **User extensions**: Oils can be extended via `~/.soap_calc/oils.json`
 
 ### CLI Commands

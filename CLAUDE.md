@@ -213,12 +213,13 @@ The skill checks current directory first, then falls back to user default. When 
 ## JSON Schemas
 
 Schemas are in `schemas/` directory:
-- `recipe.schema.json`: Recipe input format
-- `recipe_result.schema.json`: Calculation output format
+- `recipe.schema.json`: Recipe input format (JSON/YAML)
 - `oils.schema.json`: Oil database format
 - `additives.schema.json`: Additive database format
 
 Validation script: `validate_schemas.py` (checks JSON files against schemas using `jsonschema` library)
+
+Note: Recipe outputs are exported as Markdown (not JSON), so no output schema is needed.
 
 ## Recipe File Format
 
