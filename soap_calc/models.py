@@ -144,6 +144,7 @@ class AdditiveInfo:
     usage: AdditiveUsage
     stage: str  # raw string from JSON, or mapped Stage
     purpose: str
+    lye_adjustment: float = 0.0  # grams NaOH per gram of additive
     notes: str = ""
 
 
@@ -154,6 +155,7 @@ class Additive:
     percentage: Optional[float] = None
     percent_base: PercentBase = PercentBase.OIL_WEIGHT
     stage: Stage = Stage.LIGHT_TRACE
+    lye_adjustment: Optional[float] = None  # Override or manual adjustment
     notes: str = ""
 
 
@@ -342,6 +344,7 @@ class AdditiveResult:
     name: str
     amount: float
     stage: Stage
+    lye_consumed: float = 0.0  # Extra NaOH required by this additive
     notes: str = ""
 
 

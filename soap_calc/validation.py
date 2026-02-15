@@ -141,8 +141,22 @@ def validate(recipe: Recipe) -> List[str]:
                 f"Superfat oil percentages sum to {total_sf_oil_pct:.1f}% (should be 100% of the Superfat Phase)."
             )
 
+    # --- Strict Safety Checks ----------------------------------------------
+    if recipe.naoh_purity <= 0:
+        warnings.append("NaOH purity must be greater than 0%.")
+    
+    if recipe.lye_type == LyeType.KOH and recipe.koh_purity <= 0:
+        warnings.append("KOH purity must be greater than 0%.")
+
     # --- Additive checks ---------------------------------------------------
     for add in recipe.additives:
+        # Stearic Acid Safety Check
+        if "stearic acid" in add.name.lower():
+             warnings.append(
+                 f"'{add.name}' is listed as an additive. Stearic Acid should be entered as an Oil "
+                 "so its SAP value is calculated correctly. Using it as an additive treats it as inert."
+             )
+
         info = get_additive(add.name)
         if not info:
             continue

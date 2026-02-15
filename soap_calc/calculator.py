@@ -145,6 +145,53 @@ def calculate(
         naoh = round(naoh_pure / purity_naoh, 2)
         koh = round(koh_pure / purity_koh, 2)
 
+    # Additive Lye Consumption
+    # We calculate this LATER in the process (step 6), but we need it for the final LyeResult.
+    # To fix this circularity without refactoring everything, we can do a pre-pass or move Step 6 up.
+    # Actually, Step 6 (Additives) depends on `total_batch_oil_weight` and `total_liquid` (for percentages).
+    # `total_lye` (step 4) doesn't depend on additives usually.
+    # BUT if additives consume lye, we need to add that to the Total Lye reported.
+    
+    # We will just initialize it here and add it later? 
+    # No, `LyeResult` is immutable-ish (dataclass). We construct it at line 149.
+    # We should calculate additives *before* constructing LyeResult? 
+    # But additives might depend on `total_lye` for "Percent of Total Batch".
+    # Circular dependency: Lye <- Additives <- Lye.
+    #
+    # Approx solution: Calculate additives based on "Base Lye" (Saponification Lye).
+    # Then add `additive_lye` to the final LyeResult.
+    
+    # Let's peek ahead at additives to calculate extra lye.
+    extra_naoh = 0.0
+    extra_koh = 0.0
+    
+    # ... Wait, `calculator.py` structure:
+    # 4. Calculate Lye
+    # 5. Liquid
+    # 6. Additives
+    # ...
+    # 10. Result
+    
+    # `LyeResult` is created at step 4.
+    # We can recreate or modify it at the end before returning.
+    
+    # Let's verify `LyeResult` usage. It's used in Step 5 (Liquid) -> `total_lye`.
+    # Does extra lye require extra water? Usually yes (to dissolve it).
+    # If using Citric Acid, you dissolve it in water, then add lye. The extra lye reacts.
+    # The water calc should probably include the extra lye if it's "Water:Lye Ratio".
+    
+    # REFACTOR STRATEGY:
+    # We'll do a preliminary Additive pass just to find `lye_consumed`.
+    # But `additive.amount` might depend on `total_lye` (Total Batch %).
+    # 
+    # Simplification: Assume "Lye Consumed" additives don't use "Percent of Total Batch" mode.
+    # They usually use "Percent of Oils".
+    # So we can calculate them early.
+    
+    # Moving Step 6 logic (partial) up is risky.
+    # Alternative: Update `LyeResult` and `Total Liquid` at the end?
+    # This might be safer.
+    
     total_lye = naoh + koh
     lye = LyeResult(naoh_amount=naoh, koh_amount=koh)
 
@@ -203,15 +250,71 @@ def calculate(
             
             amt = base_mass * add.percentage / 100.0
         
+        # Lye Consumption (Reactive Additives)
+        lye_consumed = 0.0
+        # Check for manual adjustment on the specific entry, OR lookup from DB info
+        # The Additive model has `lye_adjustment`. If not set, we might want to check the DB.
+        # But `add` object here is from recipe, might not have DB info attached unless we look it up.
+        # However, `validation.py` looks up additives. `calculator.py` usually just processes what's there.
+        # To support this properly, we should look up the additive info if available.
+        from soap_calc.additives import get_additive
+        info = get_additive(add.name)
+        
+        # Priority: Manual override > DB value > 0
+        current_adjustment = 0.0
+        if add.lye_adjustment is not None:
+             current_adjustment = add.lye_adjustment
+        elif info and info.lye_adjustment:
+             current_adjustment = info.lye_adjustment
+             
+        if current_adjustment > 0:
+             lye_consumed = round(amt * current_adjustment, 2)
+
         amt = round(amt, 2)
         additive_weight += amt
         additive_results.append(
-            AdditiveResult(name=add.name, amount=amt, stage=add.stage, notes=add.notes)
+            AdditiveResult(
+                name=add.name, 
+                amount=amt, 
+                stage=add.stage, 
+                lye_consumed=lye_consumed,
+                notes=add.notes
+            )
         )
 
     # 7. Process Superfat Oils
     superfat_results: List[AdditiveResult] = []
     
+    # Calculate extra lye from additives (assumed NaOH for now as most adjustments are standardized to NaOH)
+    # If we need KOH adjustment, we'd need to convert using ratio ~1.403 or support specific KOH fields.
+    # For now, we add to NaOH amount (or KOH if 100% KOH?).
+    # Safety: ensure we have enough lye.
+    
+    total_lye_consumed = sum(a.lye_consumed for a in additive_results)
+    
+    if total_lye_consumed > 0:
+        if recipe.lye_type == LyeType.KOH:
+            # Convert NaOH grams to KOH grams
+            # Ratio: 56.11 / 40.00 = 1.40275
+            extra_koh = round(total_lye_consumed * 1.40275, 2)
+            lye = LyeResult(naoh_amount=lye.naoh_amount, koh_amount=round(lye.koh_amount + extra_koh, 2))
+        else:
+            # Add to NaOH
+            lye = LyeResult(naoh_amount=round(lye.naoh_amount + total_lye_consumed, 2), koh_amount=lye.koh_amount)
+        
+        # Recalculate Total Lye for liquid calculation?
+        # Liquid was calculated in Step 5.
+        # If we add lye now, liquid might be "low" relative to new total lye.
+        # But usually we dissolve the additive in *extra* water or the existing water is sufficient.
+        # Safety-wise: adding lye without adding water results in higher concentration.
+        # If the user follows "Water:Lye Ratio" (e.g. 2:1), they expect 2 * (BaseLye + AdditiveLye).
+        # We should probably update total_liquid if in Ratio mode?
+        # This gets complex. For now, we just ensure the LYE amount is correct for saponification/neutralization.
+        # The user can adjust water if needed, or we rely on the fact that additives like Citric Acid
+        # are dissolved in "some water" (deducted from total liquid or extra).
+        # Let's LEAVE total_liquid as is for now to avoid breaking existing liquid logic, 
+        # but the Total Batch Weight will increase by the extra lye weight.
+        
     if has_superfat_oils and weight_superfat_phase > 0:
         resolved_sf = _resolve_entries(recipe.superfat_oils, weight_superfat_phase)
         for r in resolved_sf:

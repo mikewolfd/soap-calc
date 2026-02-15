@@ -1,5 +1,19 @@
 [
   {
+    "name": "Citric Acid",
+    "category": "hardener",
+    "usage": {
+      "min": 1.0,
+      "max": 3.0,
+      "unit": "pct",
+      "per": "oil_weight"
+    },
+    "stage": "lye",
+    "purpose": "Chelating agent; reduces soap scum. Reacts with lye to form Sodium Citrate.",
+    "lye_adjustment": 0.624,
+    "notes": "Dissolve in water before adding to lye. Consumes lye (approx 0.624g NaOH per g Acid)."
+  },
+  {
     "name": "Activated Charcoal",
     "category": "colorant",
     "usage": {

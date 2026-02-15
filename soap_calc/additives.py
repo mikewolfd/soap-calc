@@ -90,6 +90,7 @@ def _parse_additive_entry(data: dict) -> AdditiveInfo:
         usage=usage,
         stage=_parse_stage(data.get("stage", "")),
         purpose=data.get("purpose", ""),
+        lye_adjustment=float(data.get("lye_adjustment", 0.0)),
         notes=data.get("notes", ""),
     )
 
