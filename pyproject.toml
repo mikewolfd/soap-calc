@@ -1,14 +1,48 @@
 [project]
 name = "soap_calc"
 version = "0.1.0"
-description = "A Python package for calculating soap recipes (saponification)."
+description = "The first Python-based soap formulation library. Professional saponification calculations, recipe management, and property analysis."
+readme = "README.md"
+license = {text = "MIT"}
 authors = [
     {name = "Michael Deeb", email = "michael.f.deeb@gmail.com"},
+]
+keywords = [
+    "soap",
+    "saponification",
+    "lye-calculator",
+    "soap-making",
+    "formulation",
+    "cosmetics",
+    "naoh",
+    "koh",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Home Automation",
+    "Typing :: Typed",
 ]
 dependencies = [
     "pyyaml>=6.0",
 ]
 requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/mikewolfd/soap-calc"
+Documentation = "https://github.com/mikewolfd/soap-calc#readme"
+Repository = "https://github.com/mikewolfd/soap-calc"
+Issues = "https://github.com/mikewolfd/soap-calc/issues"
+Changelog = "https://github.com/mikewolfd/soap-calc/releases"
+PyPI = "https://pypi.org/project/soap-calc/"
 
 [build-system]
 requires = ["setuptools>=61.0"]
