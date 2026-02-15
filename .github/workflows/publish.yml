@@ -34,6 +34,9 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Validate schemas
+        run: python scripts/validate_schemas.py
+
   build:
     name: Build Distribution
     needs: test
