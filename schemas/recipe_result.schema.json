@@ -1,0 +1,173 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/soap-calc/soap-calc/schemas/recipe_result.schema.json",
+    "title": "Recipe Calculation Result",
+    "description": "Output data structure after calculation.",
+    "type": "object",
+    "properties": {
+        "lye": {
+            "type": "object",
+            "properties": {
+                "naoh_amount": {
+                    "type": "number"
+                },
+                "koh_amount": {
+                    "type": "number"
+                },
+                "total_weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "total_liquid": {
+            "type": "number"
+        },
+        "liquid_breakdown": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "handling_notes": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "total_oil_weight": {
+            "type": "number"
+        },
+        "total_batch_weight": {
+            "type": "number"
+        },
+        "fatty_acid_profile": {
+            "type": "object",
+            "properties": {
+                "lauric": {
+                    "type": "number"
+                },
+                "myristic": {
+                    "type": "number"
+                },
+                "palmitic": {
+                    "type": "number"
+                },
+                "stearic": {
+                    "type": "number"
+                },
+                "ricinoleic": {
+                    "type": "number"
+                },
+                "oleic": {
+                    "type": "number"
+                },
+                "linoleic": {
+                    "type": "number"
+                },
+                "linolenic": {
+                    "type": "number"
+                }
+            }
+        },
+        "properties": {
+            "type": "object",
+            "description": "Predicted soap qualities.",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number"
+                    },
+                    "rating": {
+                        "type": "string",
+                        "enum": [
+                            "Below",
+                            "Within",
+                            "Above"
+                        ]
+                    },
+                    "low": {
+                        "type": "number"
+                    },
+                    "high": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "additives": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "stage": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "fragrances": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "stage": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "superfat_oils": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "stage": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "effective_superfat_pct": {
+            "type": "number"
+        },
+        "warnings": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

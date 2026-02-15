@@ -1,0 +1,51 @@
+{
+    "name": "Classic Three-Oil Beginner",
+    "lye_type": "NaOH",
+    "superfat_pct": 5.0,
+    "water_mode": "Water:Lye Ratio",
+    "water_value": 2.0,
+    "default_oil_weight": 800,
+    "oils": [
+        {
+            "oil": "Olive Oil",
+            "percentage": 62.5
+        },
+        {
+            "oil": "Coconut Oil (76°)",
+            "percentage": 25.0
+        },
+        {
+            "oil": "Shea Butter",
+            "percentage": 12.5
+        }
+    ],
+    "liquids": [
+        {
+            "name": "Water",
+            "percentage": 100
+        }
+    ],
+    "additives": [
+        {
+            "name": "Kaolin Clay",
+            "percentage": 1.0,
+            "percent_base": "Oil Weight",
+            "stage": "Light Trace"
+        },
+        {
+            "name": "Sodium Lactate",
+            "percentage": 3.0,
+            "percent_base": "Liquid Weight",
+            "stage": "Lye Liquid"
+        }
+    ],
+    "fragrances": [
+        {
+            "name": "Lavender",
+            "type": "Essential Oil",
+            "percentage": 3.0,
+            "stage": "Light Trace"
+        }
+    ],
+    "notes": "A gentle, well-balanced beginner bar. Great for learning cold-process technique."
+}
