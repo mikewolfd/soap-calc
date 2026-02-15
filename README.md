@@ -67,7 +67,7 @@ Create recipes in JSON or YAML. Here is a feature-rich example:
   "superfat_pct": 5.0,
   "water_mode": "Water:Lye Ratio",
   "water_value": 2.0,
-  "default_oil_weight": 800,
+  "total_oil_weight": 800,
   "oils": [
     { "oil": "Olive Oil", "percentage": 40 },
     { "oil": "Coconut Oil, 76 deg", "percentage": 30 },
@@ -93,6 +93,13 @@ Create recipes in JSON or YAML. Here is a feature-rich example:
 ```
 
 ### Advanced Fields
+
+*   **`total_oil_weight`** vs **`base_oil_weight`**: Two ways to specify batch size (only set one):
+    *   `"total_oil_weight"`: Total weight of all oils in grams (base + superfat combined). Use for cold process or when you think in terms of total batch oils.
+    *   `"base_oil_weight"`: Weight of just the base oils in grams. Superfat oils are calculated *on top* of this amount (`base × superfat_pct / 100`). Ideal for hot process recipes where you want a specific base oil weight.
+    *   If neither is set, defaults to 800 g. A `mold` specification or CLI `--oil-weight` override takes priority over both.
+
+    **Example:** `"base_oil_weight": 1000` with `"superfat_pct": 10` → 1000 g base oils + 100 g superfat oils = 1100 g total.
 
 *   **`percent_base`**: When defining additives, specify what the percentage is based on.
     *   `"Oil Weight"` (Default)

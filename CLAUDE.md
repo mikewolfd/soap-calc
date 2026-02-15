@@ -205,7 +205,7 @@ Recipes are JSON or YAML. Required fields:
 - `superfat_pct`: Superfat percentage (5.0 typical)
 - `water_mode`: "Water:Lye Ratio", "Lye Concentration", or "Water as % of Oils"
 - `water_value`: Numeric value for the chosen water mode
-- `default_oil_weight`: Total oil weight in grams
+- `total_oil_weight` OR `base_oil_weight`: Oil weight in grams (only one needed; `base_oil_weight` adds superfat on top)
 - `oils`: List of `{"oil": "Oil Name", "percentage": X}` (must sum to ~100%)
 
 Optional fields:
