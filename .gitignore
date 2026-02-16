@@ -58,3 +58,6 @@ venv.bak/
 
 # Project specific
 *.DS_Store
+
+# Documentation
+site/

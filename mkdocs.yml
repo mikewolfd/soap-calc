@@ -1,0 +1,89 @@
+site_name: Soap Calc
+site_url: https://mikewolfd.github.io/soap-calc/
+repo_url: https://github.com/mikewolfd/soap-calc
+repo_name: mikewolfd/soap-calc
+
+theme:
+  name: material
+  features:
+    - navigation.indexes
+    - content.code.copy
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [soap_calc]
+          options:
+            docstring_style: google
+            heading_level: 3
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_source: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Skills:
+      - Overview: skills/index.md
+      - Inventory Management: skills/inventory.md
+      - Formulation Assistant: skills/formulation.md
+  - Tutorial: tutorial/index.md
+  - How-to Guides:
+      - CLI Usage: guides/cli.md
+      - Formulation Techniques: guides/formulation.md
+      - Inventory Management: guides/inventory.md
+  - Explanation:
+      - Chemistry & Math: explanation/chemistry.md
+      - Soap Properties: explanation/properties.md
+  - Reference:
+      - Core: reference/core.md
+      - Ingredients: reference/ingredients.md
+      - Calculations: reference/calculations.md
+      - I/O: reference/io.md
+      - Utilities: reference/utils.md
+      - CLI: reference/cli.md
