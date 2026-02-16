@@ -1,6 +1,6 @@
 """soap_calc — A Python package for calculating soap (saponification) recipes."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 # Public API ----------------------------------------------------------------
 from soap_calc.models import (  # noqa: F401  — re-exported
