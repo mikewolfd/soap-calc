@@ -46,6 +46,19 @@ class PercentBase(enum.Enum):
 
 
 class FattyAcidProfile(BaseModel):
+    """The fatty acid composition of an oil or blend.
+
+    Attributes:
+        lauric: C12:0 — contributes to hardness, cleansing, bubbly lather.
+        myristic: C14:0 — contributes to hardness, cleansing, bubbly lather.
+        palmitic: C16:0 — contributes to hardness, stable creamy lather.
+        stearic: C18:0 — contributes to hardness, stable creamy lather.
+        ricinoleic: C18:1-OH — conditioning, bubbly, creamy (castor oil).
+        oleic: C18:1 — conditioning.
+        linoleic: C18:2 — conditioning.
+        linolenic: C18:3 — conditioning.
+    """
+
     lauric: float = 0.0
     myristic: float = 0.0
     palmitic: float = 0.0
@@ -56,6 +69,14 @@ class FattyAcidProfile(BaseModel):
     linolenic: float = 0.0
 
     def __add__(self, other: "FattyAcidProfile") -> "FattyAcidProfile":
+        """Combine two fatty acid profiles by summing each acid.
+
+        Args:
+            other: The fatty acid profile to add to this one.
+
+        Returns:
+            A new FattyAcidProfile with summed values.
+        """
         return FattyAcidProfile(
             lauric=self.lauric + other.lauric,
             myristic=self.myristic + other.myristic,
@@ -68,6 +89,14 @@ class FattyAcidProfile(BaseModel):
         )
 
     def scale(self, factor: float) -> "FattyAcidProfile":
+        """Scale all fatty acids by a factor.
+
+        Args:
+            factor: Multiplicative factor (e.g., 0.5 for 50%).
+
+        Returns:
+            A new FattyAcidProfile with scaled values.
+        """
         return FattyAcidProfile(
             lauric=self.lauric * factor,
             myristic=self.myristic * factor,
@@ -81,30 +110,48 @@ class FattyAcidProfile(BaseModel):
 
     @property
     def hard(self) -> float:
+        """Hardness factor (lauric + myristic + palmitic + stearic)."""
         return self.lauric + self.myristic + self.palmitic + self.stearic
 
     @property
     def cleansing(self) -> float:
+        """Cleansing factor (lauric + myristic)."""
         return self.lauric + self.myristic
 
     @property
     def conditioning(self) -> float:
+        """Conditioning factor (oleic + linoleic + linolenic + ricinoleic)."""
         return self.oleic + self.linoleic + self.linolenic + self.ricinoleic
 
     @property
     def bubbly(self) -> float:
+        """Bubbly lather factor (lauric + myristic + ricinoleic)."""
         return self.lauric + self.myristic + self.ricinoleic
 
     @property
     def creamy(self) -> float:
+        """Creamy lather factor (palmitic + stearic + ricinoleic)."""
         return self.palmitic + self.stearic + self.ricinoleic
 
     @property
     def longevity(self) -> float:
+        """Longevity factor (palmitic + stearic)."""
         return self.palmitic + self.stearic
 
 
 class Oil(BaseModel):
+    """A saponifiable oil or fat with its SAP values and fatty acid profile.
+
+    Attributes:
+        name: Common name of the oil.
+        sap_naoh: Grams of NaOH to saponify 1 g of this oil.
+        sap_koh: Grams of KOH to saponify 1 g of this oil.
+        fatty_acids: Fatty acid composition.
+        iodine: Iodine value (measure of unsaturation).
+        ins: INS value.
+        notes: Optional notes.
+    """
+
     name: str
     sap_naoh: float
     sap_koh: float
@@ -118,17 +165,41 @@ from typing import Annotated
 from pydantic import BaseModel, Field, WithJsonSchema
 
 class OilEntry(BaseModel):
+    """An oil entry within a recipe, pairing an oil with its blend percentage.
+
+    Attributes:
+        oil: The resolved Oil object.
+        percentage: Percentage of this oil in the blend (0-100).
+    """
+
     oil: Annotated[Oil, WithJsonSchema({"type": "string"})]
     percentage: float = Field(..., ge=0, le=100)  # % of total oils
 
 
 class Liquid(BaseModel):
+    """A liquid-phase ingredient (water, milk, tea, etc.).
+
+    Attributes:
+        name: Display name of the liquid.
+        percentage: Share of the liquid phase (0-100).
+        handling_notes: Optional preparation notes (e.g., "freeze first").
+    """
+
     name: str
     percentage: float = 100.0  # % of liquid phase
     handling_notes: str = ""
 
 
 class AdditiveUsage(BaseModel):
+    """Recommended usage range for an additive.
+
+    Attributes:
+        min: Minimum recommended amount.
+        max: Maximum recommended amount.
+        unit: Unit of measurement (e.g., "tsp").
+        per: Weight basis for the rate (e.g., "lb_oils").
+    """
+
     min: float
     max: float
     unit: str
@@ -140,6 +211,18 @@ from pydantic import BaseModel, Field, field_validator
 # ... (imports)
 
 class AdditiveInfo(BaseModel):
+    """Database record for an additive with usage and stage info.
+
+    Attributes:
+        name: Display name of the additive.
+        category: Category (e.g., "Exfoliant", "Colorant").
+        usage: Recommended usage range.
+        stage: Production stage when the additive is added.
+        purpose: Brief description of what the additive does.
+        lye_adjustment: Extra lye consumed per unit (e.g., citric acid).
+        notes: Optional notes.
+    """
+
     name: str
     category: str
     usage: AdditiveUsage
@@ -151,6 +234,14 @@ class AdditiveInfo(BaseModel):
     @field_validator("stage", mode="before")
     @classmethod
     def normalize_stage(cls, v: str) -> str:
+        """Normalize free-text stage names to Stage enum values.
+
+        Args:
+            v: Raw stage string from JSON data.
+
+        Returns:
+            Normalized stage string matching a Stage enum value.
+        """
         s = v.lower().strip()
         if s == "lye":
             return Stage.LYE_LIQUID.value
@@ -165,6 +256,18 @@ class AdditiveInfo(BaseModel):
 
 
 class Additive(BaseModel):
+    """An additive ingredient in a recipe.
+
+    Attributes:
+        name: Display name of the additive.
+        amount: Absolute weight in grams (mutually exclusive with percentage).
+        percentage: Percentage of a base weight (see percent_base).
+        percent_base: Which weight the percentage is relative to.
+        stage: Production stage for this additive.
+        lye_adjustment: Manual override for lye consumption.
+        notes: Optional notes.
+    """
+
     name: str
     amount: Optional[float] = None
     percentage: Optional[float] = None
@@ -175,6 +278,18 @@ class Additive(BaseModel):
 
 
 class Fragrance(BaseModel):
+    """A fragrance ingredient in a recipe.
+
+    Attributes:
+        name: Display name of the fragrance.
+        fragrance_type: Essential oil or fragrance oil.
+        amount: Absolute weight in grams (mutually exclusive with percentage).
+        percentage: Percentage of oil weight.
+        max_safe_pct: IFRA safety limit override.
+        stage: Production stage for this fragrance.
+        notes: Optional notes.
+    """
+
     name: str
     fragrance_type: FragranceType = FragranceType.FRAGRANCE_OIL
     amount: Optional[float] = None
@@ -185,6 +300,15 @@ class Fragrance(BaseModel):
 
 
 class MoldSpec(BaseModel):
+    """Mold dimensions for batch sizing.
+
+    Attributes:
+        length: Interior length in centimeters.
+        width: Interior width in centimeters.
+        height: Interior height in centimeters.
+        fill_factor: Fraction of mold volume to fill (0.0-1.0).
+    """
+
     length: float
     width: float
     height: float
@@ -192,6 +316,7 @@ class MoldSpec(BaseModel):
 
     @property
     def volume(self) -> float:
+        """Interior volume in cubic centimeters."""
         return self.length * self.width * self.height
 
     @property
@@ -218,6 +343,31 @@ OIL_DENSITY_G_PER_CM3 = 0.692
 
 
 class Recipe(BaseModel):
+    """A complete soap recipe definition.
+
+    Attributes:
+        name: Recipe name.
+        description: Optional description.
+        lye_type: Alkali type (NaOH, KOH, or Dual).
+        naoh_ratio: NaOH share for dual-lye recipes (0-100).
+        naoh_purity: NaOH purity percentage.
+        koh_purity: KOH purity percentage.
+        superfat_pct: Lye discount or total superfat percentage.
+        water_mode: How water amount is calculated.
+        water_value: Numeric value for the chosen water mode.
+        liquid_discount_pct: Percentage to reduce liquid (for additives that add moisture).
+        oils: List of base oils with blend percentages.
+        liquids: Liquid-phase ingredients.
+        additives: Recipe additives.
+        fragrances: Fragrance ingredients.
+        superfat_oils: Post-cook superfat oils (HP soap).
+        total_oil_weight: Total oil weight in grams (base + superfat).
+        base_oil_weight: Base oil weight in grams (excludes superfat).
+        mold: Optional mold dimensions for batch sizing.
+        ignore_warnings: Warning codes to suppress.
+        notes: Free-text notes.
+    """
+
     name: str = "Untitled Recipe"
     description: str = ""
     lye_type: LyeType = LyeType.NAOH
@@ -273,27 +423,55 @@ class Recipe(BaseModel):
 
 
 class LyeResult(BaseModel):
+    """Calculated lye amounts for a recipe.
+
+    Attributes:
+        naoh_amount: Grams of NaOH required.
+        koh_amount: Grams of KOH required.
+    """
+
     naoh_amount: float = 0.0
     koh_amount: float = 0.0
 
     @property
     def total_weight(self) -> float:
+        """Total combined lye weight in grams."""
         return self.naoh_amount + self.koh_amount
 
 
 class LiquidBreakdown(BaseModel):
+    """Weight breakdown for a single liquid ingredient.
+
+    Attributes:
+        name: Display name of the liquid.
+        amount: Weight in grams.
+        handling_notes: Preparation notes (e.g., "freeze first").
+    """
+
     name: str
     amount: float
     handling_notes: str = ""
 
 
 class PropertyRating(enum.Enum):
+    """Rating for whether a soap property falls within its recommended range."""
+
     BELOW = "Below"
     WITHIN = "Within"
     ABOVE = "Above"
 
 
 class PropertyValue(BaseModel):
+    """A predicted soap property with its value and acceptable range.
+
+    Attributes:
+        name: Display name of the property.
+        value: Predicted numeric value.
+        low: Lower bound of the recommended range.
+        high: Upper bound of the recommended range.
+        rating: Whether the value is below, within, or above range.
+    """
+
     name: str = ""
     value: float = 0.0
     low: float = 0.0
@@ -314,6 +492,19 @@ PROPERTY_RANGES = {
 
 
 class SoapProperties(BaseModel):
+    """Full set of predicted soap properties.
+
+    Attributes:
+        hardness: Bar hardness prediction.
+        cleansing: Cleansing strength prediction.
+        conditioning: Skin conditioning prediction.
+        bubbly_lather: Bubbly (big bubble) lather prediction.
+        creamy_lather: Creamy (stable) lather prediction.
+        longevity: Bar longevity prediction.
+        iodine: Iodine value of the oil blend.
+        ins: INS value of the oil blend.
+    """
+
     hardness: PropertyValue = Field(
         default_factory=lambda: PropertyValue(name="Hardness", value=0, low=PROPERTY_RANGES["hardness"][0], high=PROPERTY_RANGES["hardness"][1], rating=PropertyRating.BELOW)
     )
@@ -350,6 +541,16 @@ class SkinFeel(BaseModel):
 
 
 class AdditiveResult(BaseModel):
+    """Calculated result for a single additive, fragrance, or superfat oil.
+
+    Attributes:
+        name: Display name of the ingredient.
+        amount: Calculated weight in grams.
+        stage: Production stage for this ingredient.
+        lye_consumed: Extra NaOH consumed by this ingredient (e.g., citric acid).
+        notes: Optional notes.
+    """
+
     name: str
     amount: float
     stage: Stage
@@ -358,6 +559,24 @@ class AdditiveResult(BaseModel):
 
 
 class RecipeResult(BaseModel):
+    """Complete output of a soap recipe calculation.
+
+    Attributes:
+        lye: NaOH and KOH amounts.
+        total_liquid: Total grams of liquid.
+        liquid_breakdown: Per-liquid weight breakdown.
+        total_oil_weight: Total grams of oil (base + superfat).
+        total_batch_weight: Final batter weight in grams.
+        fatty_acid_profile: Blended fatty acid profile of the oil mix.
+        properties: Predicted soap quality properties.
+        additives: Calculated additive results.
+        fragrances: Calculated fragrance results.
+        superfat_oils: Calculated post-cook superfat oil results.
+        effective_superfat_pct: Combined lye discount + superfat oils percentage.
+        superfat_analysis: Skin-feel analysis of superfat oils.
+        warnings: Validation warnings.
+    """
+
     lye: LyeResult
     total_liquid: float
     liquid_breakdown: List[LiquidBreakdown]
@@ -375,7 +594,11 @@ class RecipeResult(BaseModel):
     # Per-stage ingredient grouping -----------------------------------------
 
     def ingredients_by_stage(self) -> Dict[Stage, List[str]]:
-        """Group all ingredients by stage for instructions."""
+        """Group all ingredients by production stage for instructions.
+
+        Returns:
+            Dictionary mapping each Stage to a list of formatted ingredient strings.
+        """
         by_stage: Dict[Stage, List[str]] = {}
 
         # 1. Lye Liquid Stage items (liquids + lye)

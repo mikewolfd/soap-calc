@@ -39,7 +39,15 @@ class _ResolvedOil:
 
 
 def _resolve_entries(entries: List[OilEntry], total_weight: float) -> List[_ResolvedOil]:
-    """Convert percentage-based oil entries to absolute weights."""
+    """Convert percentage-based oil entries to absolute weights.
+
+    Args:
+        entries: List of oil entries with percentage composition.
+        total_weight: Total weight in grams to distribute across all entries.
+
+    Returns:
+        List of resolved oil entries with computed absolute weights in grams.
+    """
     # Normalize percentages if they don't sum to 100?
     # For now assume they are roughly 100 or relative to the total_weight phase.
     # Validation handles the sum check. Here we just apply the % logic.
@@ -65,7 +73,35 @@ def calculate(
     oil_weight: Optional[float] = None,
     run_validation: bool = True,
 ) -> RecipeResult:
-    """Run the full saponification calculation on a :class:`Recipe`."""
+    """Calculate the soap recipe results, including lye, water, and additives.
+
+    This function performs the core saponification mathematics. It determines:
+    1.  **Lye Amount**: Based on the SAP values of the oils and the selected lye type (NaOH, KOH, or Hybrid).
+    2.  **Liquids**: Calculates water/liquid amount based on the specified mode (ratio, concentration, or % of oils).
+    3.  **Additives**: Resolves additive amounts and any lye consumption (e.g., for citric acid).
+    4.  **Properties**: Predicts soap characteristics (hardness, cleansing, etc.) based on fatty acid profiles.
+
+    Args:
+        recipe (Recipe): The completely defined soap recipe.
+        oil_weight (float, optional): An optional override for the total oil weight in grams.
+            If provided, the recipe is scaled to this weight. Defaults to None.
+        run_validation (bool): If True, runs the `validate()` function on the recipe and
+            includes any warnings in the result. Defaults to True.
+
+    Returns:
+        RecipeResult: A dataclass containing all calculation details, including:
+            -   `lye`: Breakdown of NaOH and KOH amounts.
+            -   `total_liquid`: Total grams of liquid to use.
+            -   `total_batch_weight`: The final weight of the soap batter.
+            -   `properties`: Predicted qualities of the cured soap.
+            -   `warnings`: A list of potential issues (safety or quality).
+
+    Examples:
+        >>> from soap_calc import SoapCalculator, Recipe
+        >>> recipe = Recipe.load("my_recipe.json")
+        >>> result = calculate(recipe)
+        >>> print(f"Lye needed: {result.lye.naoh_amount}g")
+    """
     
     # 1. Total Batch Oil Weight
     # This is the sum of Base Oils + Superfat Oils (if any)

@@ -59,26 +59,53 @@ _STAGE_INSTRUCTIONS = {
 
 
 def _fmt_pv(pv) -> str:
-    """Format a PropertyValue for the properties table."""
+    """Format a PropertyValue for the properties table.
+
+    Args:
+        pv: PropertyValue object containing value, range, and rating.
+
+    Returns:
+        Formatted string with value, range, and rating icon.
+    """
     icon = {"Below": "⬇️", "Within": "✅", "Above": "⬆️"}.get(pv.rating.value, "")
     return f"{pv.value:.0f} ({pv.low:.0f}–{pv.high:.0f}) {icon}"
 
 
 def _draw_bar(value: float, max_value: float = 100.0, width: int = 15) -> str:
-    """Draw a text-based progress bar."""
+    """Draw a text-based progress bar.
+
+    Args:
+        value: The current value to visualize.
+        max_value: The maximum value for the scale. Defaults to 100.0.
+        width: The character width of the bar. Defaults to 15.
+
+    Returns:
+        A markdown-formatted text bar using block characters.
+    """
     if max_value <= 0:
         return ""
-    
+
     # Cap value for display
     pct = max(0.0, min(value, max_value)) / max_value
     filled = int(round(pct * width))
     empty = width - filled
-    
+
     # Using block chars: █ and ░
     return f"`{'█' * filled}{'░' * empty}`"
 
 def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
-    """Render a recipe + result as a Markdown string."""
+    """Render a recipe + result as a Markdown string.
+
+    Generates a printable recipe card including checks, warnings,
+    and detailed ingredient tables.
+
+    Args:
+        recipe: The definition of the recipe.
+        result: The calculated results of the recipe.
+
+    Returns:
+        The complete Markdown document.
+    """
     lines: list[str] = []
     a = lines.append
 
@@ -86,6 +113,7 @@ def render_markdown(recipe: Recipe, result: RecipeResult) -> str:
 
     # --- Header -----------------------------------------------------------
     a(f"# 🧼 {recipe.name}\n")
+    # ... (rest of implementation remains, just docstring added)
 
     # Description (if present)
     if recipe.description:
@@ -307,6 +335,12 @@ def export_markdown(
     result: RecipeResult,
     path: Union[str, Path],
 ) -> None:
-    """Write the recipe card to a Markdown file."""
+    """Write the recipe card to a Markdown file.
+
+    Args:
+        recipe: The definition of the recipe.
+        result: The calculated results.
+        path: Destination file path.
+    """
     md = render_markdown(recipe, result)
     Path(path).write_text(md, encoding="utf-8")

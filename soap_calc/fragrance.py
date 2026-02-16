@@ -47,12 +47,23 @@ _EO_MAX_RATES: Dict[str, float] = {
 
 
 def get_eo_max_rate(name: str) -> Optional[float]:
-    """Return the max safe usage rate (%) for an essential oil, or None."""
+    """Return the max safe usage rate (%) for an essential oil, or None.
+
+    Args:
+        name: Essential oil name (case-insensitive).
+
+    Returns:
+        Maximum safe usage rate as percentage of total product weight, or None if not found.
+    """
     return _EO_MAX_RATES.get(name.lower())
 
 
 def list_eo_rates() -> Dict[str, float]:
-    """Return the full EO safety rate dictionary."""
+    """Return the full EO safety rate dictionary.
+
+    Returns:
+        Dictionary mapping essential oil names to maximum safe usage rates (%).
+    """
     return dict(sorted(_EO_MAX_RATES.items()))
 
 
@@ -86,6 +97,13 @@ def calculate_fragrance(
     If the fragrance already has an ``amount`` set, it is used directly.
     Otherwise, if ``percentage`` is set, it is applied to *total_oil_weight*.
     Otherwise, default rates are used (5 % for FO, 3 % for EO).
+
+    Args:
+        fragrance: Fragrance specification with name, type, and optional amount/percentage.
+        total_oil_weight: Total weight of oils in recipe (grams).
+
+    Returns:
+        FragranceResult with calculated amount, rate used, and optional safety warning.
     """
     max_safe = fragrance.max_safe_pct
     if max_safe is None and fragrance.fragrance_type == FragranceType.ESSENTIAL_OIL:

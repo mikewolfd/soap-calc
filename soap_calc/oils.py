@@ -19,7 +19,11 @@ from pydantic import ValidationError
 # ... (imports)
 
 def _load_oils() -> Dict[str, Oil]:
-    """Load oils from the package data and user config directory."""
+    """Load oils from the package data and user config directory.
+
+    Returns:
+        Dictionary mapping lowercase oil names to Oil objects.
+    """
     global _OILS_CACHE
     if _OILS_CACHE is not None:
         return _OILS_CACHE
@@ -66,19 +70,37 @@ def _load_oils() -> Dict[str, Oil]:
 
 
 def get_oil(name: str) -> Optional[Oil]:
-    """Retrieve an oil by name (case-insensitive)."""
+    """Retrieve an oil by name (case-insensitive).
+
+    Args:
+        name: The name of the oil to find.
+
+    Returns:
+        The Oil object if found, else None.
+    """
     oils = _load_oils()
     return oils.get(name.lower())
 
 
 def list_oils() -> List[Oil]:
-    """List all available oils sorted by name."""
+    """List all available oils sorted by name.
+
+    Returns:
+        A list of all loaded Oil objects.
+    """
     oils = _load_oils()
     return sorted(oils.values(), key=lambda o: o.name.lower())
 
 
 def search_oils(query: str) -> List[Oil]:
-    """Search for oils with names matching the query (case-insensitive)."""
+    """Search for oils with names matching the query (case-insensitive).
+
+    Args:
+        query: The substring to search for.
+
+    Returns:
+        A list of matching Oil objects, sorted by name.
+    """
     oils = _load_oils()
     q = query.lower()
     matches = [o for name, o in oils.items() if q in name]

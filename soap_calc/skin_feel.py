@@ -15,6 +15,12 @@ def _detect_wax_fraction(oils: List[OilEntry]) -> float:
     our database but positive SAP values.  This heuristic relies on the
     curated oil database — oils with incomplete FA data could be
     misclassified; add an ``is_wax`` field to Oil if this becomes a problem.
+
+    Args:
+        oils: List of oil entries in the blend.
+
+    Returns:
+        The fraction of the blend that is wax (0.0 to 1.0).
     """
     total_pct = sum(o.percentage for o in oils)
     if total_pct <= 0:
@@ -28,7 +34,16 @@ def _detect_wax_fraction(oils: List[OilEntry]) -> float:
 
 
 def _classify_3(score: float, low_thresh: float, high_thresh: float) -> str:
-    """Classify a score into Low / Moderate / High."""
+    """Classify a score into Low / Moderate / High.
+
+    Args:
+        score: The numeric score to classify.
+        low_thresh: The minimum threshold for "Moderate" classification.
+        high_thresh: The minimum threshold for "High" classification.
+
+    Returns:
+        Classification string: "Low", "Moderate", or "High".
+    """
     if score >= high_thresh:
         return "High"
     elif score >= low_thresh:
@@ -52,6 +67,15 @@ def analyze_skin_feel(
         superfat % and adjusted for base soap interaction.
       - **DOS Risk**: polyunsaturated FA (linoleic+linolenic) fraction.
         PUFA in the free oil phase oxidizes rapidly.
+
+    Args:
+        oils (List[OilEntry]): The oils comprising the superfat phase.
+        base_oils (Optional[List[OilEntry]]): The base soap oils (used for coupling calculations).
+            Defaults to None.
+        superfat_pct (float): The total percentage of superfat. Defaults to 5.0.
+
+    Returns:
+        SkinFeel: A detailed analysis of the estimated skin feel.
     """
     fa = blend_fatty_acids(oils)
 

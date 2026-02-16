@@ -14,7 +14,17 @@ from soap_calc.validation import validate
 
 
 def _load_or_exit(path: str) -> "Recipe":  # noqa: F821
-    """Load a recipe file, printing a friendly error and exiting on failure."""
+    """Load a recipe file, printing a friendly error and exiting on failure.
+
+    Args:
+        path: Path to the recipe file (JSON or YAML).
+
+    Returns:
+        Loaded Recipe object.
+
+    Raises:
+        SystemExit: If the file is not found or cannot be loaded.
+    """
     from soap_calc.models import Recipe  # deferred to avoid circular import
     try:
         return load_recipe(path)
@@ -27,6 +37,15 @@ def _load_or_exit(path: str) -> "Recipe":  # noqa: F821
 
 
 def _cmd_calculate(args: argparse.Namespace) -> None:
+    """Execute the calculate command.
+
+    Loads a recipe, performs saponification calculations, and prints results
+    as formatted Markdown to stdout.
+
+    Args:
+        args: Parsed command-line arguments containing recipe path and optional
+            oil_weight override.
+    """
     recipe = _load_or_exit(args.recipe)
     oil_wt = getattr(args, "oil_weight", None)
     result = calculate(recipe, oil_weight=oil_wt)
@@ -34,6 +53,16 @@ def _cmd_calculate(args: argparse.Namespace) -> None:
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
+    """Execute the export command.
+
+    Loads a recipe, performs calculations, and exports results as a Markdown
+    file. If no output path is specified, uses the recipe filename with .md
+    extension.
+
+    Args:
+        args: Parsed command-line arguments containing recipe path, optional
+            output path, and optional oil_weight override.
+    """
     recipe = _load_or_exit(args.recipe)
     oil_wt = getattr(args, "oil_weight", None)
     result = calculate(recipe, oil_weight=oil_wt)
@@ -43,6 +72,19 @@ def _cmd_export(args: argparse.Namespace) -> None:
 
 
 def _cmd_validate(args: argparse.Namespace) -> None:
+    """Execute the validate command.
+
+    Loads a recipe and checks it for formulation warnings (e.g., property
+    ranges, missing fields). Prints warnings to stdout and exits with code 1
+    if any warnings are found, or prints success message and exits with code 0
+    if no warnings are found.
+
+    Args:
+        args: Parsed command-line arguments containing recipe path.
+
+    Raises:
+        SystemExit: Exits with code 1 if warnings are found, 0 otherwise.
+    """
     recipe = _load_or_exit(args.recipe)
     warnings = validate(recipe)
     if warnings:
@@ -54,6 +96,15 @@ def _cmd_validate(args: argparse.Namespace) -> None:
 
 
 def _cmd_list_oils(args: argparse.Namespace) -> None:
+    """Execute the list-oils command.
+
+    Lists oils from the database in a formatted table showing NaOH SAP, KOH SAP,
+    iodine value, and INS value. If a query is provided, performs fuzzy search
+    to filter results.
+
+    Args:
+        args: Parsed command-line arguments containing optional query string.
+    """
     query = args.query
     oils = search_oils(query) if query else list_oils()
     if not oils:
@@ -66,6 +117,16 @@ def _cmd_list_oils(args: argparse.Namespace) -> None:
 
 
 def _cmd_scale(args: argparse.Namespace) -> None:
+    """Execute the scale command.
+
+    Loads a recipe and scales it to a target oil weight. If an output path is
+    specified, saves the scaled recipe to file. Otherwise, calculates and prints
+    the scaled recipe as formatted Markdown to stdout.
+
+    Args:
+        args: Parsed command-line arguments containing recipe path, target_oil
+            weight in grams, and optional output path.
+    """
     recipe = _load_or_exit(args.recipe)
     new_recipe = scale_recipe(recipe, args.target_oil)
     out = args.output
@@ -78,6 +139,11 @@ def _cmd_scale(args: argparse.Namespace) -> None:
 
 
 def _add_oil_weight_arg(parser: argparse.ArgumentParser) -> None:
+    """Add the --oil-weight argument to a subcommand parser.
+
+    Args:
+        parser: ArgumentParser subcommand to add the oil weight argument to.
+    """
     parser.add_argument(
         "--oil-weight", type=float, default=None,
         help="Override total oil weight in grams (ignores recipe default / mold).",
@@ -85,6 +151,14 @@ def _add_oil_weight_arg(parser: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the argument parser for the soap-calc CLI.
+
+    Creates the main parser and all subcommand parsers (calculate, export,
+    validate, list-oils, scale) with their respective arguments and handlers.
+
+    Returns:
+        Configured ArgumentParser with all subcommands registered.
+    """
     parser = argparse.ArgumentParser(
         prog="soap-calc",
         description="Saponification calculator for soap makers.",
@@ -125,6 +199,14 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Main entry point for the soap-calc CLI.
+
+    Parses command-line arguments and dispatches to the appropriate subcommand
+    handler function.
+
+    Args:
+        argv: Command-line arguments to parse. If None, uses sys.argv.
+    """
     parser = build_parser()
     args = parser.parse_args(argv)
     args.func(args)

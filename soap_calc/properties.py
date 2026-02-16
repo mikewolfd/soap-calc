@@ -19,6 +19,12 @@ def blend_fatty_acids(oil_entries: List[OilEntry]) -> FattyAcidProfile:
 
     Each fatty-acid percentage is weighted by the oil's share (percentage)
     of total oils.
+
+    Args:
+        oil_entries (List[OilEntry]): List of oil entries in the recipe.
+
+    Returns:
+        FattyAcidProfile: The aggregated fatty acid profile for the blend.
     """
     total_pct = sum(e.percentage for e in oil_entries)
     if total_pct <= 0:
@@ -46,7 +52,14 @@ def blend_fatty_acids(oil_entries: List[OilEntry]) -> FattyAcidProfile:
 
 
 def calculate_iodine(oil_entries: List[OilEntry]) -> float:
-    """Weighted-average iodine value of an oil blend."""
+    """Weighted-average iodine value of an oil blend.
+
+    Args:
+        oil_entries (List[OilEntry]): List of oil entries in the recipe.
+
+    Returns:
+        float: The effective iodine value.
+    """
     total_pct = sum(e.percentage for e in oil_entries)
     if total_pct <= 0:
         return 0.0
@@ -56,7 +69,14 @@ def calculate_iodine(oil_entries: List[OilEntry]) -> float:
 
 
 def calculate_ins(oil_entries: List[OilEntry]) -> float:
-    """Weighted-average INS value of an oil blend."""
+    """Weighted-average INS value of an oil blend.
+
+    Args:
+        oil_entries (List[OilEntry]): List of oil entries in the recipe.
+
+    Returns:
+        float: The effective INS value.
+    """
     total_pct = sum(e.percentage for e in oil_entries)
     if total_pct <= 0:
         return 0.0
@@ -66,6 +86,16 @@ def calculate_ins(oil_entries: List[OilEntry]) -> float:
 
 
 def _rate(val: float, low: float, high: float) -> PropertyRating:
+    """Rate a property value against acceptable range boundaries.
+
+    Args:
+        val: The property value to rate.
+        low: The lower bound of the acceptable range.
+        high: The upper bound of the acceptable range.
+
+    Returns:
+        PropertyRating: BELOW if val < low, ABOVE if val > high, WITHIN otherwise.
+    """
     if val < low:
         return PropertyRating.BELOW
     if val > high:
@@ -74,6 +104,17 @@ def _rate(val: float, low: float, high: float) -> PropertyRating:
 
 
 def _pv(name: str, val: float, low: float, high: float) -> PropertyValue:
+    """Create a PropertyValue with rating computed from range boundaries.
+
+    Args:
+        name: The property name.
+        val: The property value.
+        low: The lower bound of the acceptable range.
+        high: The upper bound of the acceptable range.
+
+    Returns:
+        PropertyValue: A complete property value with computed rating.
+    """
     return PropertyValue(
         name=name,
         value=val,
@@ -84,7 +125,17 @@ def _pv(name: str, val: float, low: float, high: float) -> PropertyValue:
 
 
 def predict_properties(oil_entries: List[OilEntry]) -> SoapProperties:
-    """Predict soap properties from a list of oil entries."""
+    """Predict soap properties from a list of oil entries.
+
+    Generates a full report of hardness, cleansing, conditioning, etc.,
+    based on the fatty acid profile of the blend.
+
+    Args:
+        oil_entries (List[OilEntry]): List of oil entries in the recipe.
+
+    Returns:
+        SoapProperties: The predicted properties.
+    """
     fa = blend_fatty_acids(oil_entries)
     iodine = calculate_iodine(oil_entries)
     ins = calculate_ins(oil_entries)

@@ -19,7 +19,14 @@ from pydantic import ValidationError
 # ... (imports)
 
 def _load_additives() -> Dict[str, AdditiveInfo]:
-    """Load additives from the package data and user config directory."""
+    """Load additives from the package data and user config directory.
+
+    Loads additives from both the built-in data/additives.json and user-defined
+    ~/.soap_calc/additives.json files. Results are cached globally.
+
+    Returns:
+        Dict[str, AdditiveInfo]: Dictionary mapping lowercase additive names to AdditiveInfo objects.
+    """
     global _ADDITIVES_CACHE
     if _ADDITIVES_CACHE is not None:
         return _ADDITIVES_CACHE
@@ -65,19 +72,37 @@ def _load_additives() -> Dict[str, AdditiveInfo]:
 
 
 def get_additive(name: str) -> Optional[AdditiveInfo]:
-    """Retrieve an additive by name (case-insensitive)."""
+    """Retrieve an additive by name (case-insensitive).
+
+    Args:
+        name: The name of the additive to find.
+
+    Returns:
+        The AdditiveInfo object if found, else None.
+    """
     additives = _load_additives()
     return additives.get(name.lower())
 
 
 def list_additives() -> List[AdditiveInfo]:
-    """List all available additives sorted by name."""
+    """List all available additives sorted by name.
+
+    Returns:
+        A list of all loaded AdditiveInfo objects.
+    """
     additives = _load_additives()
     return sorted(additives.values(), key=lambda a: a.name.lower())
 
 
 def search_additives(query: str) -> List[AdditiveInfo]:
-    """Search for additives with names matching the query (case-insensitive)."""
+    """Search for additives with names matching the query (case-insensitive).
+
+    Args:
+        query: The substring to search for.
+
+    Returns:
+        A list of matching AdditiveInfo objects, sorted by name.
+    """
     additives = _load_additives()
     q = query.lower()
     matches = [a for name, a in additives.items() if q in name]

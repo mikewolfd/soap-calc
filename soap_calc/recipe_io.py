@@ -32,10 +32,26 @@ from soap_calc.oils import get_oil
 # ---------------------------------------------------------------------------
 
 def _oil_entry_to_dict(entry: OilEntry) -> Dict[str, Any]:
+    """Convert an OilEntry to a dictionary for serialization.
+
+    Args:
+        entry: The oil entry to serialize.
+
+    Returns:
+        Dictionary with 'oil' name and 'percentage' fields.
+    """
     return {"oil": entry.oil.name, "percentage": entry.percentage}
 
 
 def _liquid_to_dict(liq: Liquid) -> Dict[str, Any]:
+    """Convert a Liquid to a dictionary for serialization.
+
+    Args:
+        liq: The liquid to serialize.
+
+    Returns:
+        Dictionary with liquid name, percentage, and optional handling notes.
+    """
     d: Dict[str, Any] = {"name": liq.name, "percentage": liq.percentage}
     if liq.handling_notes:
         d["handling_notes"] = liq.handling_notes
@@ -43,6 +59,14 @@ def _liquid_to_dict(liq: Liquid) -> Dict[str, Any]:
 
 
 def _additive_to_dict(add: Additive) -> Dict[str, Any]:
+    """Convert an Additive to a dictionary for serialization.
+
+    Args:
+        add: The additive to serialize.
+
+    Returns:
+        Dictionary with additive name, amount/percentage, percent base, stage, and optional notes.
+    """
     d: Dict[str, Any] = {"name": add.name}
     if add.amount is not None:
         d["amount"] = add.amount
@@ -56,6 +80,14 @@ def _additive_to_dict(add: Additive) -> Dict[str, Any]:
 
 
 def _fragrance_to_dict(frag: Fragrance) -> Dict[str, Any]:
+    """Convert a Fragrance to a dictionary for serialization.
+
+    Args:
+        frag: The fragrance to serialize.
+
+    Returns:
+        Dictionary with fragrance name, type, amount/percentage, safety limit, stage, and optional notes.
+    """
     d: Dict[str, Any] = {
         "name": frag.name,
         "type": frag.fragrance_type.value,
@@ -73,6 +105,14 @@ def _fragrance_to_dict(frag: Fragrance) -> Dict[str, Any]:
 
 
 def _mold_to_dict(mold: MoldSpec) -> Dict[str, Any]:
+    """Convert a MoldSpec to a dictionary for serialization.
+
+    Args:
+        mold: The mold specification to serialize.
+
+    Returns:
+        Dictionary with mold dimensions (length_cm, width_cm, height_cm) and optional fill_factor.
+    """
     d: Dict[str, Any] = {
         "length_cm": mold.length,
         "width_cm": mold.width,
@@ -84,7 +124,14 @@ def _mold_to_dict(mold: MoldSpec) -> Dict[str, Any]:
 
 
 def recipe_to_dict(recipe: Recipe) -> Dict[str, Any]:
-    """Convert a :class:`Recipe` to a plain dictionary."""
+    """Convert a :class:`Recipe` to a plain dictionary.
+
+    Args:
+        recipe: The recipe object to serialize.
+
+    Returns:
+        A dictionary representation suitable for JSON/YAML serialization.
+    """
     d: Dict[str, Any] = {
         "name": recipe.name,
         "lye_type": recipe.lye_type.value,
@@ -121,6 +168,14 @@ def recipe_to_dict(recipe: Recipe) -> Dict[str, Any]:
 
 
 def _parse_oil_entry(data: Dict[str, Any]) -> OilEntry:
+    """Parse a dictionary into an OilEntry object.
+
+    Args:
+        data: Dictionary containing 'oil' name and 'percentage' fields.
+
+    Returns:
+        An OilEntry object with the oil from the database or a minimal Oil if not found.
+    """
     oil_name = data["oil"]
     oil = get_oil(oil_name)
     if oil is None:
@@ -135,6 +190,14 @@ def _parse_oil_entry(data: Dict[str, Any]) -> OilEntry:
 
 
 def _parse_liquid(data: Dict[str, Any]) -> Liquid:
+    """Parse a dictionary into a Liquid object.
+
+    Args:
+        data: Dictionary containing liquid 'name', optional 'percentage', and 'handling_notes'.
+
+    Returns:
+        A Liquid object.
+    """
     return Liquid(
         name=data["name"],
         percentage=data.get("percentage", 100.0),
@@ -143,6 +206,14 @@ def _parse_liquid(data: Dict[str, Any]) -> Liquid:
 
 
 def _parse_additive(data: Dict[str, Any]) -> Additive:
+    """Parse a dictionary into an Additive object.
+
+    Args:
+        data: Dictionary containing additive fields (name, amount, percentage, percent_base, stage, notes).
+
+    Returns:
+        An Additive object.
+    """
     return Additive(
         name=data["name"],
         amount=data.get("amount"),
@@ -154,6 +225,14 @@ def _parse_additive(data: Dict[str, Any]) -> Additive:
 
 
 def _parse_fragrance(data: Dict[str, Any]) -> Fragrance:
+    """Parse a dictionary into a Fragrance object.
+
+    Args:
+        data: Dictionary containing fragrance fields (name, type, amount, percentage, max_safe_pct, stage, notes).
+
+    Returns:
+        A Fragrance object.
+    """
     return Fragrance(
         name=data["name"],
         fragrance_type=FragranceType(data.get("type", FragranceType.FRAGRANCE_OIL.value)),
@@ -166,6 +245,14 @@ def _parse_fragrance(data: Dict[str, Any]) -> Fragrance:
 
 
 def _parse_mold(data: Dict[str, Any]) -> MoldSpec:
+    """Parse a dictionary into a MoldSpec object.
+
+    Args:
+        data: Dictionary containing mold dimensions (length_cm, width_cm, height_cm) and optional fill_factor.
+
+    Returns:
+        A MoldSpec object.
+    """
     return MoldSpec(
         length=data["length_cm"],
         width=data["width_cm"],
@@ -175,7 +262,14 @@ def _parse_mold(data: Dict[str, Any]) -> MoldSpec:
 
 
 def dict_to_recipe(data: Dict[str, Any]) -> Recipe:
-    """Build a :class:`Recipe` from a plain dictionary."""
+    """Build a :class:`Recipe` from a plain dictionary.
+
+    Args:
+        data: The dictionary data (e.g., loaded from JSON).
+
+    Returns:
+        The reconstructed Recipe object.
+    """
     mold_data = data.get("mold")
     
     wc_mode_str = data.get("water_mode", WaterCalculationMode.WATER_LYE_RATIO.value)
@@ -216,7 +310,13 @@ def save_recipe(
     path: Union[str, Path],
     fmt: Optional[str] = None,
 ) -> None:
-    """Serialize a recipe to a JSON or YAML file."""
+    """Serialize a recipe to a JSON or YAML file.
+
+    Args:
+        recipe: The recipe to save.
+        path: Destination file path.
+        fmt: Format ('json' or 'yaml'). If None, inferred from extension.
+    """
     path = Path(path)
     if fmt is None:
         ext = path.suffix.lower()
@@ -234,7 +334,19 @@ def save_recipe(
 
 
 def load_recipe(path: Union[str, Path]) -> Recipe:
-    """Load a recipe from a JSON or YAML file."""
+    """Load a recipe from a JSON or YAML file.
+
+    Args:
+        path: Path to the recipe file.
+
+    Returns:
+        The loaded recipe object.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        json.JSONDecodeError: If JSON parsing fails.
+        yaml.YAMLError: If YAML parsing fails.
+    """
     path = Path(path)
     with open(path, "r", encoding="utf-8") as fh:
         ext = path.suffix.lower()
@@ -257,6 +369,13 @@ def scale_recipe(recipe: Recipe, target_oil_weight: float) -> Recipe:
     only the batch size changes.  Additive *amounts* (absolute grams)
     are scaled proportionally; percentage-based additives scale
     automatically.
+
+    Args:
+        recipe: The original recipe to scale.
+        target_oil_weight: The new target total oil weight in grams.
+
+    Returns:
+        A new Recipe object with scaled amounts.
     """
     current = recipe.resolve_oil_weight()
     factor = target_oil_weight / current if current > 0 else 1.0

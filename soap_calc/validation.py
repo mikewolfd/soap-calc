@@ -18,6 +18,12 @@ def validate(recipe: Recipe) -> List[str]:
     """Return a list of warning strings for the given recipe.
 
     An empty list means no issues were detected.
+
+    Args:
+        recipe: The recipe to validate.
+
+    Returns:
+        List of warning strings. Empty list if no issues were detected.
     """
     warnings: List[str] = []
 
