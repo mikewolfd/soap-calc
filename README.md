@@ -1,6 +1,7 @@
 # Soap Calc
 
 [![PyPI](https://img.shields.io/pypi/v/soap-calc.svg)](https://pypi.org/project/soap-calc/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue)](https://mikewolfd.github.io/soap-calc/)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-orange)](https://docs.anthropic.com/en/docs/claude-code)
 
 > [!CAUTION]

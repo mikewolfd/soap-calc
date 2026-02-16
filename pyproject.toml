@@ -47,7 +47,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/mikewolfd/soap-calc"
-Documentation = "https://github.com/mikewolfd/soap-calc#readme"
+Documentation = "https://mikewolfd.github.io/soap-calc/"
 Repository = "https://github.com/mikewolfd/soap-calc"
 Issues = "https://github.com/mikewolfd/soap-calc/issues"
 Changelog = "https://github.com/mikewolfd/soap-calc/releases"
