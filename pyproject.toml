@@ -1,6 +1,6 @@
 [project]
 name = "soap_calc"
-version = "0.2.1"
+version = "0.2.2"
 description = "The first Python-based soap formulation library. Professional saponification calculations, recipe management, and property analysis."
 readme = "README.md"
 license = {text = "MIT"}
