@@ -1,0 +1,5 @@
+/* Custom styles for Soap Calc documentation */
+.arithmatex {
+  /* Ensure math is visible and properly spaced */
+  display: inline-block;
+}
